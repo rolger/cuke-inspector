@@ -1,4 +1,3 @@
-@tag3
 Feature: Feature A
 
   @tag1 @tag2

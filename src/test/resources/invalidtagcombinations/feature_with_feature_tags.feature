@@ -1,6 +1,6 @@
-@tag3
-Feature: Feature A
+@tag3 @tag2
+Feature: One tag feature
 
-  @tag1 @tag2
+  @tag1
   Scenario: Two tags scenario
     Then there are all tags used

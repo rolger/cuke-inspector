@@ -24,23 +24,16 @@ class CukeInspectorTest {
         void newlyCreatedInspectorShouldNotHaveViolations() throws IOException {
             String source = "";
             CukeInspector cukeInspector = CukeInspector
-                    .withFeatureFile("classpath:com/example.feature", new ByteArrayInputStream(source.getBytes()))
+                    .withFeatureFile(Paths.get("src/test/resources/feature_without_tags.feature"))
                     .should();
 
             Assertions.assertThatNoException().isThrownBy(() -> cukeInspector.hasNoViolations());
         }
 
         @Test
-        void shouldThrowAssertion() throws IOException {
-            String source = """
-                    Feature: Simple feature
-                      Scenario: scenario to test
-                        Then something is done
-                      Scenario: scenario to test
-                        Then something else is done
-                    """;
+        void newlyCreatedInspectorShouldNotThrowAssertion() throws IOException {
             CukeInspector cukeInspector = CukeInspector
-                    .withFeatureFile("classpath:com/example.feature", new ByteArrayInputStream(source.getBytes()))
+                    .withFeatureFile(Paths.get("src/test/resources/feature_without_tags.feature"))
                     .should();
 
             try {
@@ -56,7 +49,7 @@ class CukeInspectorTest {
         @Test
         void canCheckSingleFile() throws IOException {
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureFile(Paths.get("src/test/resources/feature_without_tags.feature"))
+                    .withFeatureFile(Paths.get("src/test/resources/invalidtagcombinations/feature_A.feature"))
                     .should()
                     .checkInvalidTagCombinations(Set.of())
                     .getViolations();
@@ -67,7 +60,7 @@ class CukeInspectorTest {
         @Test
         void canCheckDirectoryWithFeatureFiles() throws IOException {
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureDirectory(Paths.get("src/test/resources/subdir"))
+                    .withFeatureDirectory(Paths.get("src/test/resources/invalidtagcombinations"))
                     .should()
                     .checkInvalidTagCombinations(Set.of("@tag2", "@tag3"))
                     .getViolations();
@@ -79,7 +72,7 @@ class CukeInspectorTest {
         @Test
         void shouldFindInvalidFeatureTags() throws IOException {
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureFile(Paths.get("src/test/resources/feature_with_tags.feature"))
+                    .withFeatureFile(Paths.get("src/test/resources/invalidtagcombinations/feature_with_feature_tags.feature"))
                     .should()
                     .checkInvalidTagCombinations(Set.of("@tag2", "@tag3"))
                     .getViolations();
@@ -91,7 +84,7 @@ class CukeInspectorTest {
         @Test
         void shouldFindInvalidScenarioTags() throws IOException {
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureFile(Paths.get("src/test/resources/feature_with_scenario_tags.feature"))
+                    .withFeatureFile(Paths.get("src/test/resources/invalidtagcombinations/dir.feature/feature_with_scenario_tags.feature"))
                     .should()
                     .checkInvalidTagCombinations(Set.of("@tag2", "@tag3"))
                     .getViolations();
@@ -103,7 +96,7 @@ class CukeInspectorTest {
         @Test
         void shouldFindInvalidMixtureOfFeatureAndScenarioTags() throws IOException {
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureFile(Paths.get("src/test/resources/feature_with_mixed_tags.feature"))
+                    .withFeatureFile(Paths.get("src/test/resources/invalidtagcombinations/feature_with_mixed_tags.feature"))
                     .should()
                     .checkInvalidTagCombinations(Set.of("@tag2", "@tag3"))
                     .getViolations();
@@ -118,7 +111,7 @@ class CukeInspectorTest {
         @Test
         void shouldNotFindViolationsIfNoKeywordIsProvided() throws IOException {
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureFile(Paths.get("src/test/resources/feature_language_en.feature"))
+                    .withFeatureFile(Paths.get("src/test/resources/invalidstepkeywords/feature_language_en.feature"))
                     .should()
                     .checkInvalidInvalidKeywords(List.of())
                     .getViolations();
@@ -129,7 +122,7 @@ class CukeInspectorTest {
         @Test
         void shouldNotFindViolationsIfKeywordDoesNotExist() throws IOException {
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureFile(Paths.get("src/test/resources/feature_language_en.feature"))
+                    .withFeatureFile(Paths.get("src/test/resources/invalidstepkeywords/feature_language_en.feature"))
                     .should()
                     .checkInvalidInvalidKeywords(List.of("Happy"))
                     .getViolations();
@@ -140,7 +133,7 @@ class CukeInspectorTest {
         @Test
         void shouldFindViolationsIfKeywordDoesExist() throws IOException {
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureFile(Paths.get("src/test/resources/feature_language_en.feature"))
+                    .withFeatureFile(Paths.get("src/test/resources/invalidstepkeywords/feature_language_en.feature"))
                     .should()
                     .checkInvalidInvalidKeywords(List.of("But"))
                     .getViolations();
@@ -152,7 +145,7 @@ class CukeInspectorTest {
         @Test
         void shouldFindMultipleViolations() throws IOException {
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureFile(Paths.get("src/test/resources/feature_language_de.feature"))
+                    .withFeatureFile(Paths.get("src/test/resources/invalidstepkeywords/feature_language_de.feature"))
                     .should()
                     .checkInvalidInvalidKeywords(List.of("Gegeben sei", "Aber"))
                     .getViolations();
@@ -161,7 +154,6 @@ class CukeInspectorTest {
             assertThat(violations.get(0).message()).startsWith("Step").contains("Gegeben sei");
             assertThat(violations.get(1).message()).startsWith("Step").contains("Aber");
         }
-
     }
 
     @Nested
@@ -169,7 +161,7 @@ class CukeInspectorTest {
         @Test
         void shouldFindStepsWithoutUserStoryTag() throws IOException {
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureFile(Paths.get("src/test/resources/feature_without_tags.feature"))
+                    .withFeatureFile(Paths.get("src/test/resources/missingtags/feature_without_tags.feature"))
                     .should()
                     .findScenariosMissingRequiredTags(TAG_REGEX)
                     .getViolations();
@@ -183,15 +175,8 @@ class CukeInspectorTest {
     class ForbiddenTags {
         @Test
         void shouldFindForbiddenFeatureTag() throws IOException {
-            String source = """
-                    @123456
-                    Feature: Simple feature
-                      Scenario: scenario to test
-                        Then something is done
-                    """;
-
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureFile("classpath:com/example.feature", new ByteArrayInputStream(source.getBytes()))
+                    .withFeatureDirectory(Paths.get("src/test/resources/forbiddentags"))
                     .should()
                     .findFeaturesWithDisallowedTags(TAG_REGEX)
                     .getViolations();
