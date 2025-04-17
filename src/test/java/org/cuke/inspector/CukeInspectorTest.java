@@ -46,10 +46,13 @@ class CukeInspectorTest {
 
     @Nested
     class InvalidTagCombinations {
+
+        public static final String INVALID_TAG_COMBINATIONS_DIRECTORY = "src/test/resources/invalidtagcombinations/";
+
         @Test
         void shouldNotFindViolationsIfNotTagCombinationIsProvided() throws IOException {
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureFile(Paths.get("src/test/resources/invalidtagcombinations/feature_A.feature"))
+                    .withFeatureFile(Paths.get(INVALID_TAG_COMBINATIONS_DIRECTORY + "feature_A.feature"))
                     .should()
                     .checkInvalidTagCombinations(Set.of())
                     .getViolations();
@@ -58,9 +61,9 @@ class CukeInspectorTest {
         }
 
         @Test
-        void  shouldFindAllViolationsWithTwoTagsCombinationInDirectory() throws IOException {
+        void shouldFindAllViolationsWithTwoTagsCombinationInDirectory() throws IOException {
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureDirectory(Paths.get("src/test/resources/invalidtagcombinations"))
+                    .withFeatureDirectory(Paths.get(INVALID_TAG_COMBINATIONS_DIRECTORY))
                     .should()
                     .checkInvalidTagCombinations(Set.of("@tag2", "@tag3"))
                     .getViolations();
@@ -72,7 +75,7 @@ class CukeInspectorTest {
         @Test
         void shouldFindInvalidFeatureTags() throws IOException {
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureFile(Paths.get("src/test/resources/invalidtagcombinations/feature_with_feature_tags.feature"))
+                    .withFeatureFile(Paths.get(INVALID_TAG_COMBINATIONS_DIRECTORY + "feature_with_feature_tags.feature"))
                     .should()
                     .checkInvalidTagCombinations(Set.of("@tag2", "@tag3"))
                     .getViolations();
@@ -84,7 +87,7 @@ class CukeInspectorTest {
         @Test
         void shouldFindInvalidScenarioTags() throws IOException {
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureFile(Paths.get("src/test/resources/invalidtagcombinations/dir.feature/feature_with_scenario_tags.feature"))
+                    .withFeatureFile(Paths.get(INVALID_TAG_COMBINATIONS_DIRECTORY + "dir.feature/feature_with_scenario_tags.feature"))
                     .should()
                     .checkInvalidTagCombinations(Set.of("@tag2", "@tag3"))
                     .getViolations();
@@ -96,7 +99,7 @@ class CukeInspectorTest {
         @Test
         void shouldFindInvalidMixtureOfFeatureAndScenarioTags() throws IOException {
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureFile(Paths.get("src/test/resources/invalidtagcombinations/feature_with_mixed_tags.feature"))
+                    .withFeatureFile(Paths.get(INVALID_TAG_COMBINATIONS_DIRECTORY + "feature_with_mixed_tags.feature"))
                     .should()
                     .checkInvalidTagCombinations(Set.of("@tag2", "@tag3"))
                     .getViolations();
@@ -157,7 +160,7 @@ class CukeInspectorTest {
     }
 
     @Nested
-    class MissingTags {
+    class MissingScenarioTags {
         @Test
         void shouldFindStepsWithoutUserStoryTag() throws IOException {
             List<CukeViolation> violations = CukeInspector
@@ -172,7 +175,7 @@ class CukeInspectorTest {
     }
 
     @Nested
-    class ForbiddenTags {
+    class ForbiddenFeatureTags {
         @Test
         void shouldFindForbiddenFeatureTag() throws IOException {
             List<CukeViolation> violations = CukeInspector
@@ -190,7 +193,7 @@ class CukeInspectorTest {
         @Test
         void shouldNotFindDuplicatedScenarios() throws IOException {
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureFile(Paths.get("src/test/resources/feature_without_tags.feature"))
+                    .withFeatureFile(Paths.get("src/test/resources/duplicatescenarios/feature1.feature"))
                     .should()
                     .findDuplicateScenarioNames()
                     .getViolations();
@@ -200,16 +203,8 @@ class CukeInspectorTest {
 
         @Test
         void shouldFindDuplicatedScenariosInSameFile() throws IOException {
-            String source = """
-                    Feature: Simple feature
-                      Scenario: scenario to test
-                        Then withparam is done
-                      Scenario: scenario to test
-                        Then something else is done
-                    """;
-
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureFile("classpath:com/example.feature", new ByteArrayInputStream(source.getBytes()))
+                    .withFeatureFile(Paths.get("src/test/resources/duplicatescenarios/feature2.feature"))
                     .should()
                     .findDuplicateScenarioNames()
                     .getViolations();
@@ -227,7 +222,6 @@ class CukeInspectorTest {
 
             assertThat(violations).hasSize(1);
         }
-
     }
 
     @Nested
@@ -235,7 +229,6 @@ class CukeInspectorTest {
         @Test
         void shouldFindDuplicatedStepExpressions() throws IOException {
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureDirectory(Paths.get("src/test/resources/duplicatestepexpression"))
                     .withJavaPackage("org.cuke.inspector.steps")
                     .should()
                     .findDuplicateStepDefinitions()
