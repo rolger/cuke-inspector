@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.cuke.inspector</groupId>
-    <artifactId>zkvbg-cuke-inspector</artifactId>
+    <artifactId>cuke-inspector</artifactId>
     <version>SNAPSHOT-1.0.0</version>
 
     <properties>
