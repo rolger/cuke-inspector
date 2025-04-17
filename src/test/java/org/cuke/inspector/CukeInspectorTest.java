@@ -223,17 +223,17 @@ class CukeInspectorTest {
     @Nested
     class DuplicatedStepExpressions {
         @Test
-        void shouldFindDuplicatedStepExpressions() throws IOException {
+        void shouldFindDuplicatedStepExpressionsInOneFile() throws IOException {
             List<CukeViolation> violations = CukeInspector
-                    .withJavaPackage("org.cuke.inspector.steps")
+                    .withJavaPackage("org.cuke.inspector.steps.duplicated.expressions")
                     .should()
                     .findDuplicateStepDefinitions()
                     .getViolations();
 
-            assertThat(violations).hasSize(2);
-            assertThat(violations.get(0).message()).endsWith("3 times.");
-
-            System.out.println(ViolationFormatter.format(violations));
+            assertThat(violations).hasSize(1);
+            assertThat(violations)
+                    .extracting(CukeViolation::message)
+                    .allSatisfy(s -> assertThat(s).endsWith("'an expression' was found 3 times."));
         }
     }
 
@@ -249,7 +249,7 @@ class CukeInspectorTest {
 
             List<CukeViolation> violations = CukeInspector
                     .withFeatureFile("classpath:com/example.feature", new ByteArrayInputStream(source.getBytes()))
-                    .withJavaPackage("org.cuke.inspector.steps.noparam")
+                    .withJavaPackage("org.cuke.inspector.steps.matching.steps")
                     .should()
                     .findUnusedStepDefinitions()
                     .getViolations();

@@ -43,6 +43,6 @@ class CukeInspectorStepDefinitionTest {
     }
 
     private Optional<SourceReference> getSourceReference(String methodName) throws ClassNotFoundException, NoSuchMethodException {
-        return Optional.of(SourceReference.fromMethod(Class.forName("org.cuke.inspector.steps.Steps").getMethod(methodName)));
+        return Optional.of(SourceReference.fromMethod(Class.forName("org.cuke.inspector.steps.matching.steps.MatchingSteps").getMethod(methodName)));
     }
 }

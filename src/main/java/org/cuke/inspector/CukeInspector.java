@@ -3,6 +3,9 @@ package org.cuke.inspector;
 import io.cucumber.core.backend.Backend;
 import io.cucumber.core.backend.DefaultObjectFactory;
 import io.cucumber.core.eventbus.EventBus;
+import io.cucumber.core.feature.FeatureParser;
+import io.cucumber.core.gherkin.Feature;
+import io.cucumber.core.runtime.FeaturePathFeatureSupplier;
 import io.cucumber.core.runtime.TimeServiceEventBus;
 import io.cucumber.core.stepexpression.StepTypeRegistry;
 import io.cucumber.gherkin.GherkinParser;
@@ -15,6 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
@@ -26,15 +30,22 @@ import static java.util.Collections.singletonList;
 public final class CukeInspector {
 
     private Map<String, InputStream> featureSources;
+    private List<URI> features;
     private List<CukeViolation> violations;
     private URI glueDirectoryUri;
 
     private CukeInspector() {
         violations = new ArrayList<>();
         featureSources = new HashMap<>();
+        features = new ArrayList<>();
     }
 
     private void addSource(String uriAsString, InputStream inputStream) {
+        try {
+            features.add(new URI(uriAsString));
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
         featureSources.put(uriAsString, inputStream);
     }
 
@@ -104,6 +115,14 @@ public final class CukeInspector {
         return glue;
     }
 
+    private List<Feature> getFeatures() {
+        FeaturePathFeatureSupplier featureSupplier = new FeaturePathFeatureSupplier(
+                () -> Thread.currentThread().getContextClassLoader(),
+                () -> features,
+                new FeatureParser(UUID::randomUUID)
+        );
+        return featureSupplier.get();
+    }
 
     private List<GherkinDocument> parseGherkinDocuments() {
         GherkinParser parser = GherkinParser.builder()
