@@ -9,11 +9,11 @@ import io.cucumber.core.stepexpression.StepTypeRegistry;
 import java.util.*;
 
 public final class CukeCachingGlue implements Glue {
-    private final List<ParameterTypeDefinition> parameterTypeDefinitions = new ArrayList();
-    private final List<DataTableTypeDefinition> dataTableTypeDefinitions = new ArrayList();
-    private final List<StepDefinition> stepDefinitions = new ArrayList();
-    private final Map<String, String> stepPatternByStepText = new HashMap();
-    private final Map<String, List<CukeInspectorStepDefinition>> stepDefinitionsByPattern = new TreeMap();
+    private final List<ParameterTypeDefinition> parameterTypeDefinitions = new ArrayList<>();
+    private final List<DataTableTypeDefinition> dataTableTypeDefinitions = new ArrayList<>();
+    private final List<StepDefinition> stepDefinitions = new ArrayList<>();
+    private final Map<String, String> stepPatternByStepText = new HashMap<>();
+    private final Map<String, List<CukeInspectorStepDefinition>> stepDefinitionsByPattern = new TreeMap<>();
     private final EventBus bus;
 
     CukeCachingGlue(EventBus bus) {
@@ -21,9 +21,11 @@ public final class CukeCachingGlue implements Glue {
     }
 
     public void addBeforeAllHook(StaticHookDefinition beforeAllHook) {
+        // not needed
     }
 
     public void addAfterAllHook(StaticHookDefinition afterAllHook) {
+        // not needed
     }
 
     public void addStepDefinition(StepDefinition stepDefinition) {
@@ -31,15 +33,19 @@ public final class CukeCachingGlue implements Glue {
     }
 
     public void addBeforeHook(HookDefinition hookDefinition) {
+        // not needed
     }
 
     public void addAfterHook(HookDefinition hookDefinition) {
+        // not needed
     }
 
     public void addBeforeStepHook(HookDefinition hookDefinition) {
+        // not needed
     }
 
     public void addAfterStepHook(HookDefinition hookDefinition) {
+        // not needed
     }
 
     public void addParameterType(ParameterTypeDefinition parameterType) {
@@ -51,15 +57,19 @@ public final class CukeCachingGlue implements Glue {
     }
 
     public void addDefaultParameterTransformer(DefaultParameterTransformerDefinition defaultParameterTransformer) {
+        // not needed
     }
 
     public void addDefaultDataTableEntryTransformer(DefaultDataTableEntryTransformerDefinition defaultDataTableEntryTransformer) {
+        // not needed
     }
 
     public void addDefaultDataTableCellTransformer(DefaultDataTableCellTransformerDefinition defaultDataTableCellTransformer) {
+        // not needed
     }
 
     public void addDocStringType(DocStringTypeDefinition docStringType) {
+        // not needed
     }
 
     Collection<ParameterTypeDefinition> getParameterTypeDefinitions() {
@@ -84,9 +94,9 @@ public final class CukeCachingGlue implements Glue {
 
     public void prepareGlue(StepTypeRegistry stepTypeRegistry) {
         StepExpressionFactory stepExpressionFactory = new StepExpressionFactory(stepTypeRegistry, this.bus);
-        this.stepDefinitions.forEach((stepDefinition) -> {
+        this.stepDefinitions.forEach(stepDefinition -> {
             StepExpression expression = stepExpressionFactory.createExpression(stepDefinition);
-            CukeInspectorStepDefinition inspectorStepDefinition = new CukeInspectorStepDefinition(this.bus.generateId(), stepDefinition, expression);
+            CukeInspectorStepDefinition inspectorStepDefinition = new CukeInspectorStepDefinition(stepDefinition, expression);
 
             stepDefinitionsByPattern
                     .computeIfAbsent(inspectorStepDefinition.getExpression().getSource(), key -> new ArrayList<>())

@@ -1,6 +1,5 @@
 package org.cuke.inspector;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 class CukeInspectorTest {
 
@@ -22,12 +21,11 @@ class CukeInspectorTest {
     class CommonTests {
         @Test
         void newlyCreatedInspectorShouldNotHaveViolations() throws IOException {
-            String source = "";
             CukeInspector cukeInspector = CukeInspector
                     .withFeatureFile(Paths.get("src/test/resources/feature_without_tags.feature"))
                     .should();
 
-            Assertions.assertThatNoException().isThrownBy(() -> cukeInspector.hasNoViolations());
+            assertThat(cukeInspector.getViolations()).isEmpty();
         }
 
         @Test
@@ -36,11 +34,7 @@ class CukeInspectorTest {
                     .withFeatureFile(Paths.get("src/test/resources/feature_without_tags.feature"))
                     .should();
 
-            try {
-                cukeInspector.hasNoViolations();
-                fail("Expected AssertionError to be thrown");
-            } catch (AssertionError e) {
-            }
+            assertThatNoException().isThrownBy(cukeInspector::hasNoViolations);
         }
     }
 
@@ -158,148 +152,146 @@ class CukeInspectorTest {
                     .extracting(CukeViolation::message)
                     .allSatisfy(s -> assertThat(s).startsWith("Step"))
                     .allSatisfy(s -> assertThat(s).containsAnyOf("Aber", "Gegeben seien", "Gegeben sei"));
-    }
-}
-
-@Nested
-class MissingScenarioTags {
-    @Test
-    void shouldFindStepsWithoutUserStoryTag() throws IOException {
-        List<CukeViolation> violations = CukeInspector
-                .withFeatureFile(Paths.get("src/test/resources/missingtags/feature_without_tags.feature"))
-                .should()
-                .findScenariosMissingRequiredTags(TAG_REGEX)
-                .getViolations();
-
-        assertThat(violations).hasSize(1);
-        assertThat(violations.get(0).message()).startsWith("Scenario");
-    }
-}
-
-@Nested
-class ForbiddenFeatureTags {
-    @Test
-    void shouldFindForbiddenFeatureTag() throws IOException {
-        List<CukeViolation> violations = CukeInspector
-                .withFeatureDirectory(Paths.get("src/test/resources/forbiddentags"))
-                .should()
-                .findFeaturesWithDisallowedTags(TAG_REGEX)
-                .getViolations();
-
-        assertThat(violations).hasSize(1);
-    }
-}
-
-@Nested
-class DuplicatedScenarios {
-    @Test
-    void shouldNotFindDuplicatedScenarios() throws IOException {
-        List<CukeViolation> violations = CukeInspector
-                .withFeatureFile(Paths.get("src/test/resources/duplicatescenarios/feature1.feature"))
-                .should()
-                .findDuplicateScenarioNames()
-                .getViolations();
-
-        assertThat(violations).isEmpty();
+        }
     }
 
-    @Test
-    void shouldFindDuplicatedScenariosInSameFile() throws IOException {
-        List<CukeViolation> violations = CukeInspector
-                .withFeatureFile(Paths.get("src/test/resources/duplicatescenarios/feature2.feature"))
-                .should()
-                .findDuplicateScenarioNames()
-                .getViolations();
+    @Nested
+    class MissingScenarioTags {
+        @Test
+        void shouldFindStepsWithoutUserStoryTag() throws IOException {
+            List<CukeViolation> violations = CukeInspector
+                    .withFeatureFile(Paths.get("src/test/resources/missingtags/feature_without_tags.feature"))
+                    .should()
+                    .findScenariosMissingRequiredTags(TAG_REGEX)
+                    .getViolations();
 
-        assertThat(violations).isNotEmpty();
+            assertThat(violations).hasSize(1);
+            assertThat(violations.get(0).message()).startsWith("Scenario");
+        }
     }
 
-    @Test
-    void shouldFindDuplicatedScenariosInDifferentFiles() throws IOException {
-        List<CukeViolation> violations = CukeInspector
-                .withFeatureDirectory(Paths.get("src/test/resources/duplicatescenarios"))
-                .should()
-                .findDuplicateScenarioNames()
-                .getViolations();
+    @Nested
+    class ForbiddenFeatureTags {
+        @Test
+        void shouldFindForbiddenFeatureTag() throws IOException {
+            List<CukeViolation> violations = CukeInspector
+                    .withFeatureDirectory(Paths.get("src/test/resources/forbiddentags"))
+                    .should()
+                    .findFeaturesWithDisallowedTags(TAG_REGEX)
+                    .getViolations();
 
-        assertThat(violations).hasSize(1);
-    }
-}
-
-@Nested
-class DuplicatedStepExpressions {
-    @Test
-    void shouldFindDuplicatedStepExpressions() throws IOException {
-        List<CukeViolation> violations = CukeInspector
-                .withJavaPackage("org.cuke.inspector.steps")
-                .should()
-                .findDuplicateStepDefinitions()
-                .getViolations();
-
-        assertThat(violations).hasSize(2);
-        assertThat(violations.get(0).message()).endsWith("3 times.");
-
-        System.out.println(ViolationFormatter.format(violations));
-    }
-}
-
-@Nested
-class UnusedStepDefinitions {
-    @Test
-    void shouldNotFindAnyUnusedStepDefinitions() throws IOException {
-        String source = """
-                Feature: Simple feature
-                  Scenario: scenario to test
-                    Then test
-                """;
-
-        List<CukeViolation> violations = CukeInspector
-                .withFeatureFile("classpath:com/example.feature", new ByteArrayInputStream(source.getBytes()))
-                .withJavaPackage("org.cuke.inspector.steps.noparam")
-                .should()
-                .findUnusedStepDefinitions()
-                .getViolations();
-
-        assertThat(violations).isEmpty();
+            assertThat(violations).hasSize(1);
+        }
     }
 
-    @Test
-    void shouldFindUnusedStepDefinition() throws IOException {
-        String source = """
-                Feature: Simple feature
-                  Scenario: scenario to test
-                    Then no match step 
-                """;
+    @Nested
+    class DuplicatedScenarios {
+        @Test
+        void shouldNotFindDuplicatedScenarios() throws IOException {
+            List<CukeViolation> violations = CukeInspector
+                    .withFeatureFile(Paths.get("src/test/resources/duplicatescenarios/feature1.feature"))
+                    .should()
+                    .findDuplicateScenarioNames()
+                    .getViolations();
 
-        List<CukeViolation> violations = CukeInspector
-                .withFeatureFile("classpath:com/example.feature", new ByteArrayInputStream(source.getBytes()))
-                .withJavaPackage("org.cuke.inspector.steps.noparam")
-                .should()
-                .findUnusedStepDefinitions()
-                .getViolations();
+            assertThat(violations).isEmpty();
+        }
 
-        assertThat(violations).hasSize(1);
+        @Test
+        void shouldFindDuplicatedScenariosInSameFile() throws IOException {
+            List<CukeViolation> violations = CukeInspector
+                    .withFeatureFile(Paths.get("src/test/resources/duplicatescenarios/feature2.feature"))
+                    .should()
+                    .findDuplicateScenarioNames()
+                    .getViolations();
+
+            assertThat(violations).isNotEmpty();
+        }
+
+        @Test
+        void shouldFindDuplicatedScenariosInDifferentFiles() throws IOException {
+            List<CukeViolation> violations = CukeInspector
+                    .withFeatureDirectory(Paths.get("src/test/resources/duplicatescenarios"))
+                    .should()
+                    .findDuplicateScenarioNames()
+                    .getViolations();
+
+            assertThat(violations).hasSize(1);
+        }
     }
 
-    @Disabled
-    @Test
-    void shouldNotFindAnyUnusedStepDefinitionsWithParam() throws IOException {
-        String source = """
-                Feature: Simple feature
-                  Scenario: scenario to test
-                    Then test "me"
-                """;
+    @Nested
+    class DuplicatedStepExpressions {
+        @Test
+        void shouldFindDuplicatedStepExpressions() throws IOException {
+            List<CukeViolation> violations = CukeInspector
+                    .withJavaPackage("org.cuke.inspector.steps")
+                    .should()
+                    .findDuplicateStepDefinitions()
+                    .getViolations();
 
-        List<CukeViolation> violations = CukeInspector
-                .withFeatureFile("classpath:com/example.feature", new ByteArrayInputStream(source.getBytes()))
-                .withJavaPackage("org.cuke.inspector.steps.withparam")
-                .should()
-                .findUnusedStepDefinitions()
-                .getViolations();
+            assertThat(violations).hasSize(2);
+            assertThat(violations.get(0).message()).endsWith("3 times.");
 
-        assertThat(violations).isEmpty();
+            System.out.println(ViolationFormatter.format(violations));
+        }
     }
 
+    @Nested
+    class UnusedStepDefinitions {
+        @Test
+        void shouldNotFindAnyUnusedStepDefinitions() {
+            String source = """
+                    Feature: Simple feature
+                      Scenario: scenario to test
+                        Then test
+                    """;
 
-}
+            List<CukeViolation> violations = CukeInspector
+                    .withFeatureFile("classpath:com/example.feature", new ByteArrayInputStream(source.getBytes()))
+                    .withJavaPackage("org.cuke.inspector.steps.noparam")
+                    .should()
+                    .findUnusedStepDefinitions()
+                    .getViolations();
+
+            assertThat(violations).isEmpty();
+        }
+
+        @Test
+        void shouldFindUnusedStepDefinition() {
+            String source = """
+                    Feature: Simple feature
+                      Scenario: scenario to test
+                        Then no match step 
+                    """;
+
+            List<CukeViolation> violations = CukeInspector
+                    .withFeatureFile("classpath:com/example.feature", new ByteArrayInputStream(source.getBytes()))
+                    .withJavaPackage("org.cuke.inspector.steps.noparam")
+                    .should()
+                    .findUnusedStepDefinitions()
+                    .getViolations();
+
+            assertThat(violations).hasSize(1);
+        }
+
+        @Disabled
+        @Test
+        void shouldNotFindAnyUnusedStepDefinitionsWithParam() {
+            String source = """
+                    Feature: Simple feature
+                      Scenario: scenario to test
+                        Then test "me"
+                    """;
+
+            List<CukeViolation> violations = CukeInspector
+                    .withFeatureFile("classpath:com/example.feature", new ByteArrayInputStream(source.getBytes()))
+                    .withJavaPackage("org.cuke.inspector.steps.withparam")
+                    .should()
+                    .findUnusedStepDefinitions()
+                    .getViolations();
+
+            assertThat(violations).isEmpty();
+        }
+    }
 }

@@ -3,22 +3,21 @@ package org.cuke.inspector;
 import io.cucumber.core.backend.*;
 import io.cucumber.core.stepexpression.StepExpression;
 import io.cucumber.java.StepDefinitionAnnotation;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
+@Slf4j
 public class CukeInspectorStepDefinition implements StepDefinition {
 
-    private final UUID uuid;
     private final StepDefinition stepDefinition;
     private final StepExpression expression;
 
-    public CukeInspectorStepDefinition(UUID uuid, StepDefinition stepDefinition, StepExpression expression) {
-        this.uuid = uuid;
+    public CukeInspectorStepDefinition(StepDefinition stepDefinition, StepExpression expression) {
         this.stepDefinition = stepDefinition;
         this.expression = expression;
     }
@@ -73,7 +72,7 @@ public class CukeInspectorStepDefinition implements StepDefinition {
         try {
             return Arrays.stream(Class.forName(reference.className()).getDeclaredMethods())
                     .filter(m -> m.getName().equals(reference.methodName()))
-                    .map(method -> getStepDefinitionAnnotation(method))
+                    .map(this::getStepDefinitionAnnotation)
                     .findFirst()
                     .orElse("");
         } catch (ClassNotFoundException e) {
@@ -97,7 +96,7 @@ public class CukeInspectorStepDefinition implements StepDefinition {
                 if (expression.getSource().equals(value.toString()))
                     return true;
             } catch (Exception e) {
-                System.err.println("Fehler beim Lesen des Werts: " + e.getMessage());
+                log.error("Fehler beim Lesen des Werts: " + e.getMessage());
             }
         }
         return false;
@@ -108,7 +107,6 @@ public class CukeInspectorStepDefinition implements StepDefinition {
         Class<? extends Annotation> annotationClass = annotation.annotationType();
         return annotationClass.getAnnotation(StepDefinitionAnnotation.class) != null;
     }
-
 
 }
 

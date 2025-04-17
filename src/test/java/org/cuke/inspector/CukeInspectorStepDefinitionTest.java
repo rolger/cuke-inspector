@@ -3,11 +3,12 @@ package org.cuke.inspector;
 import io.cucumber.core.backend.SourceReference;
 import io.cucumber.core.backend.StepDefinition;
 import io.cucumber.core.stepexpression.StepExpression;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class CukeInspectorStepDefinitionTest {
 
@@ -19,11 +20,11 @@ class CukeInspectorStepDefinitionTest {
         StepExpression stepExpression = Mockito.mock(StepExpression.class);
         Mockito.when(stepExpression.getSource()).thenReturn("assert");
 
-        CukeInspectorStepDefinition definition = new CukeInspectorStepDefinition(null, stepDefinition, stepExpression);
+        CukeInspectorStepDefinition definition = new CukeInspectorStepDefinition(stepDefinition, stepExpression);
 
         String cucumberAnnotation = definition.getCucumberAnnotation();
 
-        Assertions.assertThat(cucumberAnnotation).contains("Then");
+        assertThat(cucumberAnnotation).contains("Then");
     }
 
     @Test
@@ -34,11 +35,11 @@ class CukeInspectorStepDefinitionTest {
         StepExpression stepExpression = Mockito.mock(StepExpression.class);
         Mockito.when(stepExpression.getSource()).thenReturn("test");
 
-        CukeInspectorStepDefinition definition = new CukeInspectorStepDefinition(null, stepDefinition, stepExpression);
+        CukeInspectorStepDefinition definition = new CukeInspectorStepDefinition(stepDefinition, stepExpression);
 
         String cucumberAnnotation = definition.getCucumberAnnotation();
 
-        Assertions.assertThat(cucumberAnnotation).contains("When");
+        assertThat(cucumberAnnotation).contains("When");
     }
 
     private Optional<SourceReference> getSourceReference(String methodName) throws ClassNotFoundException, NoSuchMethodException {
