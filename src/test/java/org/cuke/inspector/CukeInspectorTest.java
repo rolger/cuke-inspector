@@ -1,10 +1,8 @@
 package org.cuke.inspector;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
@@ -22,7 +20,7 @@ class CukeInspectorTest {
         @Test
         void newlyCreatedInspectorShouldNotHaveViolations() throws IOException {
             CukeInspector cukeInspector = CukeInspector
-                    .withFeatureFile(Paths.get("src/test/resources/feature_without_tags.feature"))
+                    .withFeatureFile(Paths.get("src/test/resources/some_feature.feature"))
                     .should();
 
             assertThat(cukeInspector.getViolations()).isEmpty();
@@ -31,7 +29,7 @@ class CukeInspectorTest {
         @Test
         void newlyCreatedInspectorShouldNotThrowAssertion() throws IOException {
             CukeInspector cukeInspector = CukeInspector
-                    .withFeatureFile(Paths.get("src/test/resources/feature_without_tags.feature"))
+                    .withFeatureFile(Paths.get("src/test/resources/some_feature.feature"))
                     .should();
 
             assertThatNoException().isThrownBy(cukeInspector::hasNoViolations);
@@ -223,7 +221,7 @@ class CukeInspectorTest {
     @Nested
     class DuplicatedStepExpressions {
         @Test
-        void shouldFindDuplicatedStepExpressionsInOneFile() throws IOException {
+        void shouldFindDuplicatedStepExpressionsInOneFile() {
             List<CukeViolation> violations = CukeInspector
                     .withJavaPackage("org.cuke.inspector.steps.duplicated.expressions")
                     .should()
@@ -240,15 +238,9 @@ class CukeInspectorTest {
     @Nested
     class UnusedStepDefinitions {
         @Test
-        void shouldNotFindAnyUnusedStepDefinitions() {
-            String source = """
-                    Feature: Simple feature
-                      Scenario: scenario to test
-                        Then test
-                    """;
-
+        void shouldNotFindAnyUnusedStepDefinitions() throws IOException {
             List<CukeViolation> violations = CukeInspector
-                    .withFeatureFile("classpath:com/example.feature", new ByteArrayInputStream(source.getBytes()))
+                    .withFeatureFile(Paths.get("src/test/resources/nousage/matching_steps.feature"))
                     .withJavaPackage("org.cuke.inspector.steps.matching.steps")
                     .should()
                     .findUnusedStepDefinitions()
@@ -258,40 +250,14 @@ class CukeInspectorTest {
         }
 
         @Test
-        void shouldFindUnusedStepDefinition() {
-            String source = """
-                    Feature: Simple feature
-                      Scenario: scenario to test
-                        Then no match step 
-                    """;
-
-            List<CukeViolation> violations = CukeInspector
-                    .withFeatureFile("classpath:com/example.feature", new ByteArrayInputStream(source.getBytes()))
+        void shouldFindUnusedStepDefinition() throws IOException {
+            CukeInspector cukeInspector = CukeInspector
+                    .withFeatureFile(Paths.get("src/test/resources/nousage/matching_steps.feature"))
                     .withJavaPackage("org.cuke.inspector.steps.noparam")
                     .should()
-                    .findUnusedStepDefinitions()
-                    .getViolations();
+                    .findUnusedStepDefinitions();
 
-            assertThat(violations).hasSize(1);
-        }
-
-        @Disabled
-        @Test
-        void shouldNotFindAnyUnusedStepDefinitionsWithParam() {
-            String source = """
-                    Feature: Simple feature
-                      Scenario: scenario to test
-                        Then test "me"
-                    """;
-
-            List<CukeViolation> violations = CukeInspector
-                    .withFeatureFile("classpath:com/example.feature", new ByteArrayInputStream(source.getBytes()))
-                    .withJavaPackage("org.cuke.inspector.steps.withparam")
-                    .should()
-                    .findUnusedStepDefinitions()
-                    .getViolations();
-
-            assertThat(violations).isEmpty();
+            assertThat(cukeInspector.getViolations()).hasSize(1);
         }
     }
 }

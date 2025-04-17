@@ -14,12 +14,10 @@ import java.util.regex.Pattern;
 public class ForbiddenFeatureTagChecker implements ViolationChecker {
 
     private final Pattern forbiddenTagPattern;
-    private final String forbiddenRegex;
 
     public ForbiddenFeatureTagChecker(String forbiddenRegex) {
         Objects.requireNonNull(forbiddenRegex);
 
-        this.forbiddenRegex = forbiddenRegex;
         forbiddenTagPattern = Pattern.compile(forbiddenRegex);
     }
 

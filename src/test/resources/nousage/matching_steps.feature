@@ -1,6 +1,6 @@
 Feature: Feature with matching steps
 
   Scenario: First
-    Given arrange
+    Given arrange with 5
     When act
-    Then assert
+    Then assert "me"

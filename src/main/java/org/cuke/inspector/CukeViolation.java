@@ -1,7 +1,5 @@
 package org.cuke.inspector;
 
-import io.cucumber.messages.types.Feature;
-
 import java.util.List;
 
 public interface CukeViolation {

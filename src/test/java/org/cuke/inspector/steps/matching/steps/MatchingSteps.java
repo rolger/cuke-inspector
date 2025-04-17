@@ -6,10 +6,16 @@ import io.cucumber.java.en.When;
 
 public class MatchingSteps {
 
-    @Given("arrange")
     @When("act")
-    @Then("assert")
-    public void multipleAnnotations() {
+    public void noParams() {
+    }
+
+    @Given("arrange with {int}")
+    public void withParam(int value) {
+    }
+
+    @Then("assert {string}")
+    public void withParams(String string) {
     }
 
 }

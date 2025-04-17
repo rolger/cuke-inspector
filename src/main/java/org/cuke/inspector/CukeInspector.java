@@ -3,13 +3,11 @@ package org.cuke.inspector;
 import io.cucumber.core.backend.Backend;
 import io.cucumber.core.backend.DefaultObjectFactory;
 import io.cucumber.core.eventbus.EventBus;
-import io.cucumber.core.feature.FeatureParser;
-import io.cucumber.core.gherkin.Feature;
-import io.cucumber.core.runtime.FeaturePathFeatureSupplier;
 import io.cucumber.core.runtime.TimeServiceEventBus;
 import io.cucumber.core.stepexpression.StepTypeRegistry;
 import io.cucumber.gherkin.GherkinParser;
 import io.cucumber.java.JavaBackendProviderService;
+import io.cucumber.messages.types.Envelope;
 import io.cucumber.messages.types.GherkinDocument;
 import org.assertj.core.api.Assertions;
 import org.cuke.inspector.checker.*;
@@ -65,7 +63,7 @@ public final class CukeInspector {
         return new CukeInspectorBuilder().withFeatureDirectory(directory);
     }
 
-    public static CukeInspectorBuilder withJavaPackage(String packageName) throws IOException {
+    public static CukeInspectorBuilder withJavaPackage(String packageName) {
         Objects.requireNonNull(packageName);
         return new CukeInspectorBuilder().withJavaPackage(packageName);
     }
@@ -115,28 +113,21 @@ public final class CukeInspector {
         return glue;
     }
 
-    private List<Feature> getFeatures() {
-        FeaturePathFeatureSupplier featureSupplier = new FeaturePathFeatureSupplier(
-                () -> Thread.currentThread().getContextClassLoader(),
-                () -> features,
-                new FeatureParser(UUID::randomUUID)
-        );
-        return featureSupplier.get();
-    }
-
     private List<GherkinDocument> parseGherkinDocuments() {
         GherkinParser parser = GherkinParser.builder()
                 .includeGherkinDocument(true)
-                .includeSource(false)
-                .includePickles(false)
+                .includeSource(true)
+                .includePickles(true)
                 .build();
+
 
         return featureSources.entrySet().stream()
                 .map(entry -> {
                     try {
                         return parser.parse(entry.getKey(), entry.getValue())
-                                .findFirst().orElseThrow(() -> new RuntimeException("No envelope"))
-                                .getGherkinDocument().orElseThrow(() -> new RuntimeException("No gherkin document"));
+                                .map(Envelope::getGherkinDocument)
+                                .filter(Optional::isPresent)
+                                .map(Optional::get).findFirst().orElseThrow(() -> new RuntimeException("No gherkin document"));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

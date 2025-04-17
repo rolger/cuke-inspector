@@ -1,24 +1,26 @@
 package org.cuke.inspector.checker;
 
-import io.cucumber.messages.types.Background;
-import io.cucumber.messages.types.Feature;
-import io.cucumber.messages.types.Scenario;
-import io.cucumber.messages.types.Step;
+import io.cucumber.messages.types.*;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
 public class CucumberStreamingHelper {
+
+    private CucumberStreamingHelper() {
+        // don't create helper with static methods
+    }
+
     public static Stream<Scenario> scenarioStream(Feature feature) {
         return feature.getChildren().stream()
-                .map(child -> child.getScenario())
+                .map(FeatureChild::getScenario)
                 .filter(Optional::isPresent)
                 .map(Optional::get);
     }
 
     public static Stream<Background> backgroundStream(Feature feature) {
         return feature.getChildren().stream()
-                .map(child -> child.getBackground())
+                .map(FeatureChild::getBackground)
                 .filter(Optional::isPresent)
                 .map(Optional::get);
     }
