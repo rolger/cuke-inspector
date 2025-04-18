@@ -10,7 +10,6 @@ import org.cuke.inspector.FeatureLocation;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,13 +25,7 @@ public class UnusedStepDefinitionsChecker {
 
 
         return glue.getCukeStepDefinitions().stream()
-                .filter(entry -> !stepsUsedInFeatureFiles.contains(entry.getExpression().getSource()))
-                .filter(entry ->
-                        stepsUsedInFeatureFiles.stream()
-                                .map(step -> entry.getExpression().match(step))
-                                .filter(Objects::nonNull)
-                                .findAny().isEmpty()
-                )
+                .filter(stepDefinition -> stepDefinition.isNotUsedInAnyFeature(stepsUsedInFeatureFiles))
                 .map(UnusedStepDefinitionsViolation::buildViolation)
                 .toList();
     }

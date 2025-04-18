@@ -15,7 +15,7 @@ class CukeInspectorStepDefinitionTest {
     @Test
     void shouldRetrieveAnnotationWhichMatchesExpression() throws ClassNotFoundException, NoSuchMethodException {
         StepDefinition stepDefinition = Mockito.mock(StepDefinition.class);
-        Mockito.when(stepDefinition.getSourceReference()).thenReturn(getSourceReference("multipleAnnotations"));
+        Mockito.when(stepDefinition.getSourceReference()).thenReturn(getSourceReference("first"));
 
         StepExpression stepExpression = Mockito.mock(StepExpression.class);
         Mockito.when(stepExpression.getSource()).thenReturn("assert");
@@ -30,10 +30,10 @@ class CukeInspectorStepDefinitionTest {
     @Test
     void shouldRetrieveAnnotation() throws ClassNotFoundException, NoSuchMethodException {
         StepDefinition stepDefinition = Mockito.mock(StepDefinition.class);
-        Mockito.when(stepDefinition.getSourceReference()).thenReturn(getSourceReference("whenExpression"));
+        Mockito.when(stepDefinition.getSourceReference()).thenReturn(getSourceReference("second"));
 
         StepExpression stepExpression = Mockito.mock(StepExpression.class);
-        Mockito.when(stepExpression.getSource()).thenReturn("test");
+        Mockito.when(stepExpression.getSource()).thenReturn("an expression");
 
         CukeInspectorStepDefinition definition = new CukeInspectorStepDefinition(stepDefinition, stepExpression);
 
@@ -43,6 +43,6 @@ class CukeInspectorStepDefinitionTest {
     }
 
     private Optional<SourceReference> getSourceReference(String methodName) throws ClassNotFoundException, NoSuchMethodException {
-        return Optional.of(SourceReference.fromMethod(Class.forName("org.cuke.inspector.steps.matching.steps.MatchingSteps").getMethod(methodName)));
+        return Optional.of(SourceReference.fromMethod(Class.forName("org.cuke.inspector.steps.duplicated.expressions.Steps").getMethod(methodName)));
     }
 }

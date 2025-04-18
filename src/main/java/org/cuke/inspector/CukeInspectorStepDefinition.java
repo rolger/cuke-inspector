@@ -7,9 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 public class CukeInspectorStepDefinition implements StepDefinition {
@@ -32,6 +30,7 @@ public class CukeInspectorStepDefinition implements StepDefinition {
 
     @Override
     public void execute(Object[] objects) throws CucumberBackendException, CucumberInvocationTargetException {
+        // not used for inspections
     }
 
     @Override
@@ -62,6 +61,19 @@ public class CukeInspectorStepDefinition implements StepDefinition {
     public String getRegEx() {
         // can't access expression.expression!
         return expression.getSource();
+    }
+
+    public boolean isNotUsedInAnyFeature(Set<String> stepsUsedInFeatureFiles) {
+        // matches directly - no parameters
+        if (stepsUsedInFeatureFiles.contains(getExpression().getSource()))
+            return false;
+
+        // does not match including parameters
+        return stepsUsedInFeatureFiles.stream()
+                .map(step -> getExpression().match(step))
+                .filter(Objects::nonNull)
+                .findAny()
+                .isEmpty();
     }
 
     public String getCucumberAnnotation() {
@@ -107,7 +119,6 @@ public class CukeInspectorStepDefinition implements StepDefinition {
         Class<? extends Annotation> annotationClass = annotation.annotationType();
         return annotationClass.getAnnotation(StepDefinitionAnnotation.class) != null;
     }
-
 }
 
 
