@@ -8,7 +8,10 @@ import org.cuke.inspector.CukeInspectorStepDefinition;
 import org.cuke.inspector.CukeViolation;
 import org.cuke.inspector.FeatureLocation;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class UnusedStepDefinitionsChecker {
@@ -21,15 +24,16 @@ public class UnusedStepDefinitionsChecker {
                 .map(Step::getText)
                 .collect(Collectors.toSet());
 
-        return new HashMap<>(glue.getStepDefinitionsByPattern()).entrySet().stream()
-                .filter(entry -> !stepsUsedInFeatureFiles.contains(entry.getKey()))
+
+        return glue.getCukeStepDefinitions().stream()
+                .filter(entry -> !stepsUsedInFeatureFiles.contains(entry.getExpression().getSource()))
                 .filter(entry ->
                         stepsUsedInFeatureFiles.stream()
-                                .map(step -> entry.getValue().getFirst().getExpression().match(step))
+                                .map(step -> entry.getExpression().match(step))
                                 .filter(Objects::nonNull)
                                 .findAny().isEmpty()
                 )
-                .map(entry -> UnusedStepDefinitionsViolation.buildViolation(entry.getValue()))
+                .map(UnusedStepDefinitionsViolation::buildViolation)
                 .toList();
     }
 
@@ -37,16 +41,16 @@ public class UnusedStepDefinitionsChecker {
         private static final String MESSAGE_TEMPLATE = "The step definition '%s' is not used in any feature file.";
 
         private final String message;
-        private final List<CukeInspectorStepDefinition> steps;
+        private final CukeInspectorStepDefinition step;
 
-        public static CukeViolation buildViolation(List<CukeInspectorStepDefinition> steps) {
+        public static CukeViolation buildViolation(CukeInspectorStepDefinition step) {
             return new UnusedStepDefinitionsViolation(
-                    MESSAGE_TEMPLATE.formatted(steps.getFirst().getPattern(), steps.size()), steps);
+                    MESSAGE_TEMPLATE.formatted(step.getPattern()), step);
         }
 
-        public UnusedStepDefinitionsViolation(String message, List<CukeInspectorStepDefinition> steps) {
+        public UnusedStepDefinitionsViolation(String message, CukeInspectorStepDefinition step) {
             this.message = message;
-            this.steps = steps;
+            this.step = step;
         }
 
         @Override
@@ -66,20 +70,8 @@ public class UnusedStepDefinitionsChecker {
 
         @Override
         public String format() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("\n");
-            sb.append(message()).append("\n");
-            steps.forEach(stepDefinition -> {
-                String indentation = "   ";
-                sb.append(indentation + stepDefinition.getLocation())
-                        .append(": @")
-                        .append(stepDefinition.getCucumberAnnotation())
-                        .append("(\"")
-                        .append(stepDefinition.getPattern())
-                        .append("\")")
-                        .append("\n");
-            });
-            return sb.toString();
+            String indentation = "   ";
+            return "%n%s%n%s%s: @%s(\"%s\")%n".formatted(message(), indentation, step.getLocation(), step.getCucumberAnnotation(), step.getPattern());
         }
     }
 }

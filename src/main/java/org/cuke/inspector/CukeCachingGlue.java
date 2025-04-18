@@ -5,14 +5,13 @@ import io.cucumber.core.eventbus.EventBus;
 import io.cucumber.core.stepexpression.StepExpression;
 import io.cucumber.core.stepexpression.StepExpressionFactory;
 import io.cucumber.core.stepexpression.StepTypeRegistry;
+import lombok.Getter;
 
 import java.util.*;
 
 public final class CukeCachingGlue implements Glue {
-    private final List<ParameterTypeDefinition> parameterTypeDefinitions = new ArrayList<>();
-    private final List<DataTableTypeDefinition> dataTableTypeDefinitions = new ArrayList<>();
     private final List<StepDefinition> stepDefinitions = new ArrayList<>();
-    private final Map<String, String> stepPatternByStepText = new HashMap<>();
+    @Getter
     private final Map<String, List<CukeInspectorStepDefinition>> stepDefinitionsByPattern = new TreeMap<>();
     private final EventBus bus;
 
@@ -49,11 +48,11 @@ public final class CukeCachingGlue implements Glue {
     }
 
     public void addParameterType(ParameterTypeDefinition parameterType) {
-        this.parameterTypeDefinitions.add(parameterType);
+        // not needed
     }
 
     public void addDataTableType(DataTableTypeDefinition dataTableType) {
-        this.dataTableTypeDefinitions.add(dataTableType);
+        // not needed
     }
 
     public void addDefaultParameterTransformer(DefaultParameterTransformerDefinition defaultParameterTransformer) {
@@ -72,24 +71,8 @@ public final class CukeCachingGlue implements Glue {
         // not needed
     }
 
-    Collection<ParameterTypeDefinition> getParameterTypeDefinitions() {
-        return this.parameterTypeDefinitions;
-    }
-
-    Collection<DataTableTypeDefinition> getDataTableTypeDefinitions() {
-        return this.dataTableTypeDefinitions;
-    }
-
-    Collection<StepDefinition> getStepDefinitions() {
-        return this.stepDefinitions;
-    }
-
-    Map<String, String> getStepPatternByStepText() {
-        return this.stepPatternByStepText;
-    }
-
-    public Map<String, List<CukeInspectorStepDefinition>> getStepDefinitionsByPattern() {
-        return this.stepDefinitionsByPattern;
+    public List<CukeInspectorStepDefinition> getCukeStepDefinitions() {
+        return this.stepDefinitionsByPattern.values().stream().flatMap(Collection::stream).toList();
     }
 
     public void prepareGlue(StepTypeRegistry stepTypeRegistry) {
