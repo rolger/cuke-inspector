@@ -1,3 +1,5 @@
+<a href="https://github.com/actions/create-release"><img alt="GitHub Actions status" src="https://github.com/rolger/cuke-inspector/workflows/Build/badge.svg"></a>
+
 # 🥒 cuke-inspector
 
 **cuke-inspector** is a lightweight, pluggable linter for [Cucumber](https://cucumber.io/) and [Gherkin](https://cucumber.io/docs/gherkin/). It analyzes feature files and reports common issues, inconsistencies, and violations of your team's conventions.
