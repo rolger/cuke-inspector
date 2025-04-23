@@ -4,8 +4,11 @@
 name: Publish package to GitHub Packages
 
 on:
-  release:
-    types: [ created ]
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version to build'
+        required: true
 
 jobs:
   build:
@@ -22,8 +25,13 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
       - name: Set Release Version in pom.xml
-        run: latest_tag=$(git for-each-ref --sort=-creatordate --format '%(refname:short)' refs/tags | tail -1)
-             mvn versions:set -DnewVersion=$(latest_tag)
+        run: | 
+          mvn versions:set -DnewVersion="${{github.event.inputs.release_version}}-SNAPSHOT"
+          git add pom.xml
+          git commit -m "Prepare release version ${{github.event.inputs.release_version}}"
+          mvn release:prepare
+          
+
       - name: Publish to GitHub Packages Apache Maven
         run: mvn --batch-mode deploy
         env:
