@@ -163,7 +163,7 @@ class CukeInspectorTest {
                     .findScenariosMissingRequiredTags(TAG_REGEX)
                     .getViolations();
 
-            assertThat(violations).hasSize(1);
+            assertThat(violations).hasSize(2);
             assertThat(violations.get(0).message()).startsWith("Scenario");
         }
     }

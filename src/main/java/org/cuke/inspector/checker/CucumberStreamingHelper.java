@@ -12,8 +12,23 @@ public class CucumberStreamingHelper {
     }
 
     public static Stream<Scenario> scenarioStream(Feature feature) {
-        return feature.getChildren().stream()
+        Stream<Scenario> ruleScenarioStream = ruleStream(feature)
+                .flatMap(rule -> rule.getChildren().stream())
+                .map(RuleChild::getScenario)
+                .filter(Optional::isPresent)
+                .map(Optional::get);
+
+        return Stream.concat(
+                ruleScenarioStream,
+                feature.getChildren().stream()
                 .map(FeatureChild::getScenario)
+                .filter(Optional::isPresent)
+                .map(Optional::get));
+    }
+
+    private static Stream<Rule> ruleStream(Feature feature) {
+        return feature.getChildren().stream()
+                .map(FeatureChild::getRule)
                 .filter(Optional::isPresent)
                 .map(Optional::get);
     }
@@ -30,7 +45,7 @@ public class CucumberStreamingHelper {
                 scenarioStream(feature)
                         .flatMap(scenario -> scenario.getSteps().stream()),
                 backgroundStream(feature)
-                        .flatMap(child -> child.getSteps().stream())
+                        .flatMap(background -> background.getSteps().stream())
         );
     }
 }
