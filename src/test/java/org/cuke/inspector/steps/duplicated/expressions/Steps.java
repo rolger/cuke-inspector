@@ -10,14 +10,17 @@ public class Steps {
     @When("act")
     @Then("assert")
     public void first() {
+        // only for testing purposes
     }
 
     @When("an expression")
     public void second() {
+        // only for testing purposes
     }
 
     @Then("an expression")
     public void third() {
+        // only for testing purposes
     }
 
 }

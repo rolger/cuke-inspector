@@ -6,6 +6,7 @@ public class MoreSteps {
 
     @Then("test")
     public void thenExpression() {
+        // only for testing purposes
     }
 
 }

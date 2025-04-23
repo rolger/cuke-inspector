@@ -8,14 +8,17 @@ public class MatchingSteps {
 
     @When("act")
     public void noParams() {
+        // only for testing purposes
     }
 
     @Given("arrange with {int}")
     public void withParam(int value) {
+        // only for testing purposes
     }
 
     @Then("assert {string}")
     public void withParams(String string) {
+        // only for testing purposes
     }
 
 }
