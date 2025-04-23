@@ -36,8 +36,8 @@ Currently not available as jar file. Clone the repository locally
 - [x] check scenarios for missing tags
 - [x] check features for forbidden tags
 - [x] check duplicated scenario names
-- [ ] check source code for unused step implementations
-- [ ] check Background steps - currently they are ignored 
+- [x] check source code for unused step implementations
+- [x] check Background steps - currently they are ignored 
 - [ ] bug: cannot call multiple checks 
 - [ ] cli support
 
