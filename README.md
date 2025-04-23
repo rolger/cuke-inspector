@@ -4,7 +4,6 @@
 <div align="center">
 
 [![Build Status](https://github.com/rolger/cuke-inspector/workflows/Build/badge.svg)](https://github.com/rolger/cuke-inspector/actions)
-[![GitHub Release](https://github.com/rolger/cuke-inspector/workflows/Build/badge.svg)](https://github.com/rolger/cuke-inspector/actions)
 [![#StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://vshymanskyy.github.io/StandWithUkraine)
 
 </div>
