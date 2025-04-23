@@ -5,13 +5,12 @@ import io.cucumber.messages.types.GherkinDocument;
 import io.cucumber.messages.types.Scenario;
 import org.cuke.inspector.CukeViolation;
 import org.cuke.inspector.FeatureLocation;
-import org.cuke.inspector.ViolationChecker;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class MissingRequiredTagChecker implements ViolationChecker {
+public class MissingRequiredTagChecker {
 
     private final Pattern requiredTagPattern;
 
@@ -19,8 +18,7 @@ public class MissingRequiredTagChecker implements ViolationChecker {
         requiredTagPattern = Pattern.compile(requiredRegex);
     }
 
-    @Override
-    public Collection<? extends CukeViolation> inspect(List<GherkinDocument> gherkinDocuments) {
+    public Collection<CukeViolation> inspect(List<GherkinDocument> gherkinDocuments) {
         return gherkinDocuments.stream()
                 .flatMap(gherkinDocument -> {
                     Feature feature = gherkinDocument.getFeature().orElseThrow(() -> new RuntimeException("No feature in " + gherkinDocument.getUri()));

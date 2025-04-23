@@ -7,21 +7,22 @@ import io.cucumber.messages.types.GherkinDocument;
 import io.cucumber.messages.types.Step;
 import org.cuke.inspector.CukeViolation;
 import org.cuke.inspector.FeatureLocation;
-import org.cuke.inspector.ViolationChecker;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 import static org.cuke.inspector.checker.CucumberStreamingHelper.stepStream;
 
-public class InvalidStepKeywordChecker implements ViolationChecker {
+public class InvalidStepKeywordChecker {
     private final List<String> forbiddenStepKeywords;
 
     public InvalidStepKeywordChecker(List<String> forbiddenStepKeywords) {
         this.forbiddenStepKeywords = Collections.unmodifiableList(forbiddenStepKeywords);
     }
 
-    @Override
-    public Collection<? extends CukeViolation> inspect(List<GherkinDocument> gherkinDocuments) {
+    public Collection<CukeViolation> inspect(List<GherkinDocument> gherkinDocuments) {
         return gherkinDocuments.stream()
                 .flatMap(gherkinDocument -> {
                     Feature feature = gherkinDocument.getFeature().orElseThrow(() -> new RuntimeException("No feature in " + gherkinDocument.getUri()));
@@ -61,6 +62,7 @@ public class InvalidStepKeywordChecker implements ViolationChecker {
                             step.getLocation().getLine(),
                             step.getLocation().getColumn()));
         }
+
         @Override
         public String format() {
             return "";

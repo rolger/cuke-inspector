@@ -4,7 +4,6 @@ import io.cucumber.messages.types.GherkinDocument;
 import io.cucumber.messages.types.Scenario;
 import org.cuke.inspector.CukeViolation;
 import org.cuke.inspector.FeatureLocation;
-import org.cuke.inspector.ViolationChecker;
 
 import java.util.List;
 import java.util.Map;
@@ -13,9 +12,8 @@ import java.util.stream.Stream;
 
 import static org.cuke.inspector.checker.CucumberStreamingHelper.scenarioStream;
 
-public class DuplicateScenariosChecker implements ViolationChecker {
+public class DuplicateScenariosChecker {
 
-    @Override
     public List<CukeViolation> inspect(List<GherkinDocument> gherkinDocuments) {
         Map<String, List<ScenarioWithGherkinDocument>> groupedByScenarioName = gherkinDocuments.stream()
                 .flatMap(doc -> combineScenariosWithDoc(doc))

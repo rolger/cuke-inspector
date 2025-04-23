@@ -6,7 +6,6 @@ import io.cucumber.messages.types.Scenario;
 import io.cucumber.messages.types.Tag;
 import org.cuke.inspector.CukeViolation;
 import org.cuke.inspector.FeatureLocation;
-import org.cuke.inspector.ViolationChecker;
 
 import java.util.Collection;
 import java.util.List;
@@ -16,15 +15,14 @@ import java.util.stream.Stream;
 
 import static org.cuke.inspector.checker.CucumberStreamingHelper.scenarioStream;
 
-public class InvalidTagCombinationsChecker implements ViolationChecker {
+public class InvalidTagCombinationsChecker {
     private final Set<String> invalidTagCombinations;
 
     public InvalidTagCombinationsChecker(Set<String> invalidTagCombinations) {
         this.invalidTagCombinations = invalidTagCombinations;
     }
 
-    @Override
-    public Collection<? extends CukeViolation> inspect(List<GherkinDocument> gherkinDocuments) {
+    public Collection<CukeViolation> inspect(List<GherkinDocument> gherkinDocuments) {
         return gherkinDocuments.stream()
                 .flatMap(gherkinDocument -> {
                     Feature feature = gherkinDocument.getFeature().orElseThrow(() -> new RuntimeException("No feature in " + gherkinDocument.getUri()));

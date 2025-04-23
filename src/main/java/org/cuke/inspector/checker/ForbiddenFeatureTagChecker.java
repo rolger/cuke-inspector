@@ -4,14 +4,13 @@ import io.cucumber.messages.types.Feature;
 import io.cucumber.messages.types.GherkinDocument;
 import org.cuke.inspector.CukeViolation;
 import org.cuke.inspector.FeatureLocation;
-import org.cuke.inspector.ViolationChecker;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class ForbiddenFeatureTagChecker implements ViolationChecker {
+public class ForbiddenFeatureTagChecker {
 
     private final Pattern forbiddenTagPattern;
 
@@ -21,7 +20,7 @@ public class ForbiddenFeatureTagChecker implements ViolationChecker {
         forbiddenTagPattern = Pattern.compile(forbiddenRegex);
     }
 
-    public Collection<? extends CukeViolation> inspect(List<GherkinDocument> gherkinDocuments) {
+    public Collection<CukeViolation> inspect(List<GherkinDocument> gherkinDocuments) {
         return gherkinDocuments.stream()
                 .flatMap(gherkinDocument -> {
                     Feature feature = gherkinDocument.getFeature().orElseThrow(() -> new RuntimeException("No feature in " + gherkinDocument.getUri()));
