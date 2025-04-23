@@ -4,13 +4,13 @@
 
     <groupId>org.cuke.inspector</groupId>
     <artifactId>cuke-inspector</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <scm>
         <connection>scm:git:https://github.com/rolger/cuke-inspector.git</connection>
         <url>http://github.com/rolger/cuke-inspector</url>
         <developerConnection>scm:git:https://github.com/rolger/cuke-inspector.git</developerConnection>
-      <tag>v1.0.0</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <properties>
