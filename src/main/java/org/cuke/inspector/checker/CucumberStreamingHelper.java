@@ -34,10 +34,17 @@ public class CucumberStreamingHelper {
     }
 
     public static Stream<Background> backgroundStream(Feature feature) {
-        return feature.getChildren().stream()
-                .map(FeatureChild::getBackground)
+        Stream<Background> ruleBackgroundStream = ruleStream(feature)
+                .flatMap(rule -> rule.getChildren().stream())
+                .map(RuleChild::getBackground)
                 .filter(Optional::isPresent)
                 .map(Optional::get);
+
+        return Stream.concat(ruleBackgroundStream,
+                feature.getChildren().stream()
+                        .map(FeatureChild::getBackground)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get));
     }
 
     public static Stream<Step> stepStream(Feature feature) {

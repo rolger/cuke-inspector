@@ -72,7 +72,7 @@ class CukeInspectorTest {
                     .checkInvalidTagCombinations(Set.of("@tag2", "@tag3"))
                     .getViolations();
 
-            assertThat(violations.get(0).message()).startsWith("Feature");
+            assertThat(violations.getFirst().message()).startsWith("Feature");
             System.out.println(violations);
         }
 
@@ -84,7 +84,7 @@ class CukeInspectorTest {
                     .checkInvalidTagCombinations(Set.of("@tag2", "@tag3"))
                     .getViolations();
 
-            assertThat(violations.get(0).message()).startsWith("Scenario");
+            assertThat(violations.getFirst().message()).startsWith("Scenario");
             System.out.println(violations);
         }
 
@@ -96,7 +96,7 @@ class CukeInspectorTest {
                     .checkInvalidTagCombinations(Set.of("@tag2", "@tag3"))
                     .getViolations();
 
-            assertThat(violations.get(0).message()).startsWith("Scenario");
+            assertThat(violations.getFirst().message()).startsWith("Scenario");
             System.out.println(violations);
         }
     }
@@ -133,8 +133,8 @@ class CukeInspectorTest {
                     .checkInvalidInvalidKeywords(List.of("But"))
                     .getViolations();
 
-            assertThat(violations).isNotEmpty();
-            assertThat(violations.get(0).message()).startsWith("Step");
+            assertThat(violations).hasSize(3);
+            assertThat(violations.getFirst().message()).startsWith("Step");
         }
 
         @Test
@@ -164,7 +164,7 @@ class CukeInspectorTest {
                     .getViolations();
 
             assertThat(violations).hasSize(2);
-            assertThat(violations.get(0).message()).startsWith("Scenario");
+            assertThat(violations.getFirst().message()).startsWith("Scenario");
         }
     }
 

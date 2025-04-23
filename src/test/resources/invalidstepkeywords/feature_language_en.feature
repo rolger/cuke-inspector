@@ -11,3 +11,11 @@ Feature: No tags feature
     Given this is valid
     When this is valid
     Then this is valid
+
+  Rule: Rule adds new level
+    Background:
+      But this is invalid
+
+    Scenario: No tags scenario
+      But this is invalid
+      Then this is valid
