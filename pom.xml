@@ -46,11 +46,6 @@
             <version>7.20.1</version>
         </dependency>
         <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>gherkin-utils</artifactId>
-            <version>9.2.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.11.3</version>
