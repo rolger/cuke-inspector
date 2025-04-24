@@ -7,9 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+### Fixed
+- resolve steps in scenario outlines
+- include steps and scenarios from `Background` in `Rule` sections
+- include steps and scenarios from `Rule` sections
 
-## 1.0.0 - 2025-04-18
+## 1.0.0 - 2025-04-23
 
 ### Added
 - Add inspector for
