@@ -12,7 +12,7 @@ public class DuplicateStepDefinitionsChecker {
     public List<CukeViolation> inspect(CukeCachingGlue glue) {
         return glue.getStepDefinitionsByPattern().values().stream()
                 .filter(entry -> entry.size() > 1)
-                .map(steps -> DuplicateStepDefinitionsViolation.buildViolation(steps))
+                .map(DuplicateStepDefinitionsViolation::buildViolation)
                 .toList();
     }
 
@@ -55,7 +55,8 @@ public class DuplicateStepDefinitionsChecker {
             sb.append(message()).append("\n");
             steps.forEach(stepDefinition -> {
                 String indentation = "   ";
-                sb.append(indentation + stepDefinition.getLocation())
+                sb.append(indentation)
+                        .append(stepDefinition.getLocation())
                         .append(": @")
                         .append(stepDefinition.getCucumberAnnotation())
                         .append("(\"")

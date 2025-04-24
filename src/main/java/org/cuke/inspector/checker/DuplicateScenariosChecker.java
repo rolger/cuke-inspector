@@ -16,7 +16,7 @@ public class DuplicateScenariosChecker {
 
     public List<CukeViolation> inspect(List<GherkinDocument> gherkinDocuments) {
         Map<String, List<ScenarioWithGherkinDocument>> groupedByScenarioName = gherkinDocuments.stream()
-                .flatMap(doc -> combineScenariosWithDoc(doc))
+                .flatMap(DuplicateScenariosChecker::combineScenariosWithDoc)
                 .collect(Collectors.groupingBy(
                         combination -> combination.scenario().getName(),
                         Collectors.toList()
@@ -82,7 +82,8 @@ public class DuplicateScenariosChecker {
             sb.append(message()).append("\n");
             featureLocations().forEach(location -> {
                 String indentation = "   ";
-                sb.append(indentation + location.fileName())
+                sb.append(indentation)
+                        .append(location.fileName())
                         .append(":[")
                         .append(location.line())
                         .append(",")

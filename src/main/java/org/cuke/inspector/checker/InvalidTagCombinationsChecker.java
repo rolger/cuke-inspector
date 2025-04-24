@@ -51,7 +51,7 @@ public class InvalidTagCombinationsChecker {
                 .map(Tag::getName)
                 .collect(Collectors.toSet());
 
-        return invalidTagCombination.stream().allMatch(tagNames::contains);
+        return tagNames.containsAll(invalidTagCombination);
     }
 
     private static List<Tag> mergeTags(Feature feature, Scenario scenario) {
@@ -86,7 +86,7 @@ public class InvalidTagCombinationsChecker {
         }
 
         private static String formatMessage(String message, String name, Set<String> invalidTagCombination) {
-            return message.formatted(name, invalidTagCombination.stream().collect(Collectors.joining(", ")));
+            return message.formatted(name, String.join(", ", invalidTagCombination));
         }
 
         @Override
