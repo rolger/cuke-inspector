@@ -260,4 +260,5 @@ class CukeInspectorTest {
             assertThat(cukeInspector.getViolations()).hasSize(1);
         }
     }
+
 }

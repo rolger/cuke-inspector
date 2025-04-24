@@ -12,13 +12,17 @@ public class MatchingSteps {
     }
 
     @Given("arrange with {int}")
-    public void withParam(int value) {
+    public void withIntParam(int value) {
         // only for testing purposes
     }
 
-    @Then("assert {string}")
-    public void withParams(String string) {
+    @Then("assert with {string}")
+    public void withStringParams(String string, int value) {
         // only for testing purposes
     }
 
+    @Then("assert {string} {int}")
+    public void withMixedParams(String string, int value) {
+        // only for testing purposes
+    }
 }

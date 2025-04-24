@@ -3,6 +3,11 @@ package org.cuke.inspector;
 import io.cucumber.core.backend.Backend;
 import io.cucumber.core.backend.DefaultObjectFactory;
 import io.cucumber.core.eventbus.EventBus;
+import io.cucumber.core.feature.FeatureParser;
+import io.cucumber.core.feature.Options;
+import io.cucumber.core.gherkin.Feature;
+import io.cucumber.core.runtime.FeaturePathFeatureSupplier;
+import io.cucumber.core.runtime.FeatureSupplier;
 import io.cucumber.core.runtime.TimeServiceEventBus;
 import io.cucumber.core.stepexpression.StepTypeRegistry;
 import io.cucumber.gherkin.GherkinParser;
@@ -27,20 +32,20 @@ import static java.util.Collections.singletonList;
 
 public final class CukeInspector {
 
-    private Map<String, InputStream> featureSources;
-    private List<URI> features;
-    private List<CukeViolation> violations;
+    private final Map<String, InputStream> featureSources;
+    private final List<URI> featureURIs;
+    private final List<CukeViolation> violations;
     private URI glueDirectoryUri;
 
     private CukeInspector() {
         violations = new ArrayList<>();
         featureSources = new HashMap<>();
-        features = new ArrayList<>();
+        featureURIs = new ArrayList<>();
     }
 
     private void addSource(String uriAsString, InputStream inputStream) {
         try {
-            features.add(new URI(uriAsString));
+            featureURIs.add(new URI(uriAsString));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -99,8 +104,17 @@ public final class CukeInspector {
     }
 
     public CukeInspector findUnusedStepDefinitions() {
-        violations.addAll(new UnusedStepDefinitionsChecker().inspect(parseGherkinDocuments(), createGlue()));
+        violations.addAll(new UnusedStepDefinitionsChecker().inspect(getFeatures(), createGlue()));
         return this;
+    }
+
+    private List<Feature> getFeatures() {
+        EventBus eventBus = new TimeServiceEventBus(Clock.systemUTC(), UUID::randomUUID);
+        final FeatureParser parser = new FeatureParser(eventBus::generateId);
+        Options runtimeOptions = () -> featureURIs;
+
+        final FeatureSupplier featureSupplier = new FeaturePathFeatureSupplier(() -> Thread.currentThread().getContextClassLoader(), runtimeOptions, parser);
+        return featureSupplier.get();
     }
 
     private CukeCachingGlue createGlue() {
@@ -144,8 +158,7 @@ public final class CukeInspector {
     }
 
     public static class CukeInspectorBuilder {
-
-        private CukeInspector cukeInspector;
+        private final CukeInspector cukeInspector;
 
         public CukeInspectorBuilder() {
             this.cukeInspector = new CukeInspector();
@@ -186,6 +199,5 @@ public final class CukeInspector {
         public CukeInspector should() {
             return cukeInspector;
         }
-
     }
 }
