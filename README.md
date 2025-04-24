@@ -31,15 +31,6 @@ Currently not available as jar file. Clone the repository locally
 
 ---
 
-## 🛠 Roadmap
-- [x] check scenarios for missing tags
-- [x] check features for forbidden tags
-- [x] check duplicated scenario names
-- [x] check source code for unused step implementations
-- [x] check Background steps - currently they are ignored 
-- [ ] bug: cannot call multiple checks 
-- [ ] cli support
-
 ## 🤝 Contributing
 Got an idea for a rule or fix? PRs and issues are welcome!
 
