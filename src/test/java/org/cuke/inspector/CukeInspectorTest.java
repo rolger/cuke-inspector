@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 
 class CukeInspectorTest {
 
-    public static final String TAG_REGEX = "@\\d{6}";
+    public static final String USERSTORY_TAG = "@\\d{6}";
 
     @Nested
     class CommonTests {
@@ -34,6 +34,7 @@ class CukeInspectorTest {
 
             assertThatNoException().isThrownBy(cukeInspector::hasNoViolations);
         }
+
     }
 
     @Nested
@@ -160,7 +161,7 @@ class CukeInspectorTest {
             List<CukeViolation> violations = CukeInspector
                     .withFeatureFile(Paths.get("src/test/resources/missingtags/feature_without_tags.feature"))
                     .should()
-                    .findScenariosMissingRequiredTags(TAG_REGEX)
+                    .findScenariosMissingRequiredTags(USERSTORY_TAG)
                     .getViolations();
 
             assertThat(violations).hasSize(2);
@@ -175,7 +176,7 @@ class CukeInspectorTest {
             List<CukeViolation> violations = CukeInspector
                     .withFeatureDirectory(Paths.get("src/test/resources/forbiddentags"))
                     .should()
-                    .findFeaturesWithDisallowedTags(TAG_REGEX)
+                    .findFeaturesWithDisallowedTags(USERSTORY_TAG)
                     .getViolations();
 
             assertThat(violations).hasSize(1);
@@ -258,6 +259,28 @@ class CukeInspectorTest {
                     .findUnusedStepDefinitions();
 
             assertThat(cukeInspector.getViolations()).hasSize(1);
+        }
+    }
+
+    @Nested
+    class MultipleAnalysis {
+        @Test
+        void shouldAggregateViolationsOfMultipleAnalysis() throws IOException {
+            List<CukeViolation> violations = CukeInspector
+                    .withFeatureDirectory(Paths.get("src/test/resources/duplicatescenarios"))
+                    .withFeatureDirectory(Paths.get("src/test/resources/forbiddentags"))
+                    .withFeatureDirectory(Paths.get("src/test/resources/invalidtagcombinations/"))
+                    .withJavaPackage("org.cuke.inspector.steps.duplicated.expressions")
+                    .should()
+                    .findDuplicateScenarioNames()
+                    .findFeaturesWithDisallowedTags(USERSTORY_TAG)
+                    .findScenariosMissingRequiredTags(USERSTORY_TAG)
+                    .findDuplicateStepDefinitions()
+                    .checkInvalidTagCombinations(Set.of("@tag2", "@tag3"))
+                    .checkInvalidInvalidKeywords(List.of("But"))
+                    .getViolations();
+
+            assertThat(violations).hasSize(15);
         }
     }
 

@@ -1,19 +1,6 @@
 package org.cuke.inspector;
 
-import io.cucumber.core.backend.Backend;
-import io.cucumber.core.backend.DefaultObjectFactory;
-import io.cucumber.core.eventbus.EventBus;
-import io.cucumber.core.feature.FeatureParser;
-import io.cucumber.core.feature.Options;
-import io.cucumber.core.gherkin.Feature;
-import io.cucumber.core.runtime.FeaturePathFeatureSupplier;
-import io.cucumber.core.runtime.FeatureSupplier;
-import io.cucumber.core.runtime.TimeServiceEventBus;
-import io.cucumber.core.stepexpression.StepTypeRegistry;
-import io.cucumber.gherkin.GherkinParser;
-import io.cucumber.java.JavaBackendProviderService;
-import io.cucumber.messages.types.Envelope;
-import io.cucumber.messages.types.GherkinDocument;
+import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
 import org.cuke.inspector.checker.*;
 
@@ -21,40 +8,24 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Clock;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static java.util.Collections.singletonList;
-
 public final class CukeInspector {
 
-    private final Map<String, InputStream> featureSources;
-    private final List<URI> featureURIs;
     private final List<CukeViolation> violations;
-    private URI glueDirectoryUri;
+    private final CucumberRepository cucumberRepository;
 
-    private CukeInspector() {
+    public CukeInspector(CucumberRepository cucumberRepository) {
         violations = new ArrayList<>();
-        featureSources = new HashMap<>();
-        featureURIs = new ArrayList<>();
-    }
-
-    private void addSource(String uriAsString, InputStream inputStream) {
-        try {
-            featureURIs.add(new URI(uriAsString));
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-        featureSources.put(uriAsString, inputStream);
+        this.cucumberRepository = cucumberRepository;
     }
 
     public static CukeInspectorBuilder withFeatureFile(Path source) throws IOException {
         Objects.requireNonNull(source);
-        return new CukeInspectorBuilder().withFeatureFile(source.toUri().toString(), new ByteArrayInputStream(Files.readAllBytes(source)));
+        return withFeatureFile(source.toUri().toString(), new ByteArrayInputStream(Files.readAllBytes(source)));
     }
 
     public static CukeInspectorBuilder withFeatureFile(String featureSource, InputStream inputStream) {
@@ -74,79 +45,38 @@ public final class CukeInspector {
     }
 
     public CukeInspector checkInvalidTagCombinations(Set<String> invalidTagCombination) {
-        violations.addAll(new InvalidTagCombinationsChecker(invalidTagCombination).inspect(parseGherkinDocuments()));
+        violations.addAll(new InvalidTagCombinationsChecker(invalidTagCombination).inspect(cucumberRepository.getGherkinDocuments()));
         return this;
     }
 
     public CukeInspector checkInvalidInvalidKeywords(List<String> forbiddenStepKeywords) {
-        violations.addAll(new InvalidStepKeywordChecker(forbiddenStepKeywords).inspect(parseGherkinDocuments()));
+        violations.addAll(new InvalidStepKeywordChecker(forbiddenStepKeywords).inspect(cucumberRepository.getGherkinDocuments()));
         return this;
     }
 
     public CukeInspector findDuplicateScenarioNames() {
-        violations.addAll(new DuplicateScenariosChecker().inspect(parseGherkinDocuments()));
+        violations.addAll(new DuplicateScenariosChecker().inspect(cucumberRepository.getGherkinDocuments()));
         return this;
     }
 
     public CukeInspector findScenariosMissingRequiredTags(String requiredRegex) {
-        violations.addAll(new MissingRequiredTagChecker(requiredRegex).inspect(parseGherkinDocuments()));
+        violations.addAll(new MissingRequiredTagChecker(requiredRegex).inspect(cucumberRepository.getGherkinDocuments()));
         return this;
     }
 
     public CukeInspector findFeaturesWithDisallowedTags(String forbiddenRegex) {
-        violations.addAll(new ForbiddenFeatureTagChecker(forbiddenRegex).inspect(parseGherkinDocuments()));
+        violations.addAll(new ForbiddenFeatureTagChecker(forbiddenRegex).inspect(cucumberRepository.getGherkinDocuments()));
         return this;
     }
 
     public CukeInspector findDuplicateStepDefinitions() {
-        violations.addAll(new DuplicateStepDefinitionsChecker().inspect(createGlue()));
+        violations.addAll(new DuplicateStepDefinitionsChecker().inspect(cucumberRepository.createGlue()));
         return this;
     }
 
     public CukeInspector findUnusedStepDefinitions() {
-        violations.addAll(new UnusedStepDefinitionsChecker().inspect(getFeatures(), createGlue()));
+        violations.addAll(new UnusedStepDefinitionsChecker().inspect(cucumberRepository.getFeatures(), cucumberRepository.createGlue()));
         return this;
-    }
-
-    private List<Feature> getFeatures() {
-        EventBus eventBus = new TimeServiceEventBus(Clock.systemUTC(), UUID::randomUUID);
-        final FeatureParser parser = new FeatureParser(eventBus::generateId);
-        Options runtimeOptions = () -> featureURIs;
-
-        final FeatureSupplier featureSupplier = new FeaturePathFeatureSupplier(() -> Thread.currentThread().getContextClassLoader(), runtimeOptions, parser);
-        return featureSupplier.get();
-    }
-
-    private CukeCachingGlue createGlue() {
-        DefaultObjectFactory lookup = new DefaultObjectFactory();
-        Backend backend = new JavaBackendProviderService().create(lookup, lookup, () -> Thread.currentThread().getContextClassLoader());
-        EventBus bus = new TimeServiceEventBus(Clock.systemUTC(), UUID::randomUUID);
-        CukeCachingGlue glue = new CukeCachingGlue(bus);
-        backend.loadGlue(glue, singletonList(glueDirectoryUri));
-        glue.prepareGlue(new StepTypeRegistry(Locale.getDefault()));
-        return glue;
-    }
-
-    private List<GherkinDocument> parseGherkinDocuments() {
-        GherkinParser parser = GherkinParser.builder()
-                .includeGherkinDocument(true)
-                .includeSource(true)
-                .includePickles(true)
-                .build();
-
-
-        return featureSources.entrySet().stream()
-                .map(entry -> {
-                    try {
-                        return parser.parse(entry.getKey(), entry.getValue())
-                                .map(Envelope::getGherkinDocument)
-                                .filter(Optional::isPresent)
-                                .map(Optional::get).findFirst().orElseThrow(() -> new RuntimeException("No gherkin document"));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .toList();
     }
 
     public List<CukeViolation> getViolations() {
@@ -158,14 +88,24 @@ public final class CukeInspector {
     }
 
     public static class CukeInspectorBuilder {
-        private final CukeInspector cukeInspector;
+        private final Map<String, InputStream> featureSources;
+        private final List<URI> featureURIs;
+        private URI glueDirectoryUri;
 
-        public CukeInspectorBuilder() {
-            this.cukeInspector = new CukeInspector();
+        private CukeInspectorBuilder() {
+            featureSources = new HashMap<>();
+            featureURIs = new ArrayList<>();
+            glueDirectoryUri = null;
+        }
+
+        @SneakyThrows
+        private void addSource(String uriAsString, InputStream inputStream) {
+            featureURIs.add(new URI(uriAsString));
+            featureSources.put(uriAsString, inputStream);
         }
 
         public CukeInspectorBuilder withFeatureFile(String featureSource, InputStream inputStream) {
-            cukeInspector.addSource(featureSource, inputStream);
+            addSource(featureSource, inputStream);
             return this;
         }
 
@@ -183,21 +123,18 @@ public final class CukeInspector {
                     .forEach(this::addSource);
         }
 
+        @SneakyThrows
         private void addSource(Path file) {
-            try {
-                cukeInspector.addSource(file.toUri().toString(), new ByteArrayInputStream(Files.readAllBytes(file)));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            addSource(file.toUri().toString(), new ByteArrayInputStream(Files.readAllBytes(file)));
         }
 
         public CukeInspectorBuilder withJavaPackage(String packageName) {
-            cukeInspector.glueDirectoryUri = URI.create("classpath:" + packageName);
+            glueDirectoryUri = URI.create("classpath:" + packageName);
             return this;
         }
 
         public CukeInspector should() {
-            return cukeInspector;
+            return new CukeInspector(new CucumberRepository(featureSources, featureURIs, glueDirectoryUri));
         }
     }
 }
