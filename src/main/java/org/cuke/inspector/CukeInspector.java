@@ -16,11 +16,11 @@ import java.util.stream.Stream;
 public final class CukeInspector {
 
     private final List<CukeViolation> violations;
-    private final CucumberRepository cucumberRepository;
+    private final CucumberSupplier cucumberSupplier;
 
-    public CukeInspector(CucumberRepository cucumberRepository) {
+    public CukeInspector(CucumberSupplier cucumberSupplier) {
         violations = new ArrayList<>();
-        this.cucumberRepository = cucumberRepository;
+        this.cucumberSupplier = cucumberSupplier;
     }
 
     public static CukeInspectorBuilder withFeatureFile(Path source) throws IOException {
@@ -45,37 +45,37 @@ public final class CukeInspector {
     }
 
     public CukeInspector checkInvalidTagCombinations(Set<String> invalidTagCombination) {
-        violations.addAll(new InvalidTagCombinationsChecker(invalidTagCombination).inspect(cucumberRepository.getGherkinDocuments()));
+        violations.addAll(new InvalidTagCombinationsChecker(invalidTagCombination).inspect(cucumberSupplier));
         return this;
     }
 
     public CukeInspector checkInvalidInvalidKeywords(List<String> forbiddenStepKeywords) {
-        violations.addAll(new InvalidStepKeywordChecker(forbiddenStepKeywords).inspect(cucumberRepository.getGherkinDocuments()));
+        violations.addAll(new InvalidStepKeywordChecker(forbiddenStepKeywords).inspect(cucumberSupplier));
         return this;
     }
 
     public CukeInspector findDuplicateScenarioNames() {
-        violations.addAll(new DuplicateScenariosChecker().inspect(cucumberRepository.getGherkinDocuments()));
+        violations.addAll(new DuplicateScenariosChecker().inspect(cucumberSupplier));
         return this;
     }
 
     public CukeInspector findScenariosMissingRequiredTags(String requiredRegex) {
-        violations.addAll(new MissingRequiredTagChecker(requiredRegex).inspect(cucumberRepository.getGherkinDocuments()));
+        violations.addAll(new MissingRequiredTagChecker(requiredRegex).inspect(cucumberSupplier));
         return this;
     }
 
     public CukeInspector findFeaturesWithDisallowedTags(String forbiddenRegex) {
-        violations.addAll(new ForbiddenFeatureTagChecker(forbiddenRegex).inspect(cucumberRepository.getGherkinDocuments()));
+        violations.addAll(new ForbiddenFeatureTagChecker(forbiddenRegex).inspect(cucumberSupplier));
         return this;
     }
 
     public CukeInspector findDuplicateStepDefinitions() {
-        violations.addAll(new DuplicateStepDefinitionsChecker().inspect(cucumberRepository.createGlue()));
+        violations.addAll(new DuplicateStepDefinitionsChecker().inspect(cucumberSupplier));
         return this;
     }
 
     public CukeInspector findUnusedStepDefinitions() {
-        violations.addAll(new UnusedStepDefinitionsChecker().inspect(cucumberRepository.getFeatures(), cucumberRepository.createGlue()));
+        violations.addAll(new UnusedStepDefinitionsChecker().inspect(cucumberSupplier));
         return this;
     }
 
@@ -134,7 +134,7 @@ public final class CukeInspector {
         }
 
         public CukeInspector should() {
-            return new CukeInspector(new CucumberRepository(featureSources, featureURIs, glueDirectoryUri));
+            return new CukeInspector(new CucumberSupplier(featureSources, featureURIs, glueDirectoryUri));
         }
     }
 }

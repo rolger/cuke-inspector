@@ -1,11 +1,7 @@
 package org.cuke.inspector.checker;
 
-import io.cucumber.core.gherkin.Feature;
 import io.cucumber.core.gherkin.Step;
-import org.cuke.inspector.CukeCachingGlue;
-import org.cuke.inspector.CukeInspectorStepDefinition;
-import org.cuke.inspector.CukeViolation;
-import org.cuke.inspector.FeatureLocation;
+import org.cuke.inspector.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,14 +9,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class UnusedStepDefinitionsChecker {
-    public Collection<CukeViolation> inspect(Collection<Feature> features, CukeCachingGlue glue) {
-        Set<String> stepsUsedInFeatureFiles = features.stream()
+    public Collection<CukeViolation> inspect(CucumberSupplier cucumberSupplier) {
+        Set<String> stepsUsedInFeatureFiles = cucumberSupplier.getFeatures().stream()
                 .flatMap(feature -> feature.getPickles().stream())
                 .flatMap(pickle -> pickle.getSteps().stream())
                 .map(Step::getText)
                 .collect(Collectors.toSet());
 
-        return glue.getCukeStepDefinitions().stream()
+        return cucumberSupplier.getGlue().getCukeStepDefinitions().stream()
                 .filter(stepDefinition -> stepDefinition.isNotUsedInAnyFeature(stepsUsedInFeatureFiles))
                 .map(UnusedStepDefinitionsViolation::buildViolation)
                 .toList();

@@ -1,16 +1,13 @@
 package org.cuke.inspector.checker;
 
-import org.cuke.inspector.CukeCachingGlue;
-import org.cuke.inspector.CukeInspectorStepDefinition;
-import org.cuke.inspector.CukeViolation;
-import org.cuke.inspector.FeatureLocation;
+import org.cuke.inspector.*;
 
 import java.util.List;
 
 public class DuplicateStepDefinitionsChecker {
 
-    public List<CukeViolation> inspect(CukeCachingGlue glue) {
-        return glue.getStepDefinitionsByPattern().values().stream()
+    public List<CukeViolation> inspect(CucumberSupplier cucumberSupplier) {
+        return cucumberSupplier.getGlue().getStepDefinitionsByPattern().values().stream()
                 .filter(entry -> entry.size() > 1)
                 .map(DuplicateStepDefinitionsViolation::buildViolation)
                 .toList();

@@ -3,6 +3,7 @@ package org.cuke.inspector.checker;
 import io.cucumber.messages.types.Feature;
 import io.cucumber.messages.types.GherkinDocument;
 import io.cucumber.messages.types.Scenario;
+import org.cuke.inspector.CucumberSupplier;
 import org.cuke.inspector.CukeViolation;
 import org.cuke.inspector.FeatureLocation;
 
@@ -18,8 +19,8 @@ public class MissingRequiredTagChecker {
         requiredTagPattern = Pattern.compile(requiredRegex);
     }
 
-    public Collection<CukeViolation> inspect(List<GherkinDocument> gherkinDocuments) {
-        return gherkinDocuments.stream()
+    public Collection<CukeViolation> inspect(CucumberSupplier cucumberSupplier) {
+        return cucumberSupplier.getGherkinDocuments().stream()
                 .flatMap(gherkinDocument -> {
                     Feature feature = gherkinDocument.getFeature().orElseThrow(() -> new RuntimeException("No feature in " + gherkinDocument.getUri()));
                     return inspect(gherkinDocument, feature).stream();

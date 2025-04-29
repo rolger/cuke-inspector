@@ -23,7 +23,7 @@ import java.util.*;
 
 import static java.util.Collections.singletonList;
 
-public class CucumberRepository {
+public class CucumberSupplier {
 
     private final Map<String, InputStream> featureSources;
     private final List<URI> featureURIs;
@@ -32,7 +32,7 @@ public class CucumberRepository {
     private List<GherkinDocument> gherkinDocuments;
     private CukeCachingGlue glue;
 
-    public CucumberRepository(Map<String, InputStream> featureSources, List<URI> featureURIs, URI glueDirectoryUri) {
+    public CucumberSupplier(Map<String, InputStream> featureSources, List<URI> featureURIs, URI glueDirectoryUri) {
         this.featureSources = featureSources;
         this.featureURIs = featureURIs;
         this.glueDirectoryUri = glueDirectoryUri;
@@ -53,7 +53,7 @@ public class CucumberRepository {
         return features;
     }
 
-    public CukeCachingGlue createGlue() {
+    public CukeCachingGlue getGlue() {
         if (glue == null) {
             EventBus bus = new TimeServiceEventBus(Clock.systemUTC(), UUID::randomUUID);
             glue = new CukeCachingGlue(bus);
