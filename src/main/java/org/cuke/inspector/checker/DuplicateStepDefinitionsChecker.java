@@ -66,5 +66,13 @@ public class DuplicateStepDefinitionsChecker {
             });
             return sb.toString();
         }
+
+        @Override
+        public String toString() {
+            return "DuplicateStepDefinitionsViolation{" +
+                    "message='" + message + '\'' +
+                    ", steps=" + steps +
+                    '}';
+        }
     }
 }

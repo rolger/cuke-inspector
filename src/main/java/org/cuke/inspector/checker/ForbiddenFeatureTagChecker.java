@@ -33,10 +33,10 @@ public class ForbiddenFeatureTagChecker {
     }
 
     record ForbiddenFeatureTagViolation(String message, FeatureLocation featureLocation) implements CukeViolation {
-        private static final String FEATURE_MESSAGE = "Feature '%s' contains forbidden tag (%s).";
+        private static final String FEATURE_MESSAGE = "Feature '%s' contains forbidden tag: %s.";
 
         private static CukeViolation build(GherkinDocument gherkinDocument, Feature feature, String forbiddenTagName) {
-            return new ForbiddenFeatureTagChecker.ForbiddenFeatureTagViolation(
+            return new ForbiddenFeatureTagViolation(
                     FEATURE_MESSAGE.formatted(feature.getName(), forbiddenTagName),
                     new FeatureLocation(
                             gherkinDocument.getUri().orElse("unknown uri"),
@@ -45,5 +45,15 @@ public class ForbiddenFeatureTagChecker {
                             feature.getLocation().getColumn()));
         }
 
+        @Override
+        public String toString() {
+            return "ForbiddenFeatureTagViolation{" +
+                    "featureFile='" + featureLocation.fileName() + '\'' +
+                    "message='" + message + '\'' +
+                    "tokenName='" + featureLocation.tokenName() + '\'' +
+                    ", line=" + featureLocation.line() +
+                    ", column=" + featureLocation.column() +
+                    '}';
+        }
     }
 }

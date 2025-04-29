@@ -39,7 +39,7 @@ public class MissingRequiredTagChecker {
         private static final String SCENARIO_MESSAGE = "Scenario '%s' does not contain a reference tag to an User Story.";
 
         private static CukeViolation buildViolation(GherkinDocument gherkinDocument, Scenario scenario) {
-            return new InvalidStepKeywordChecker.InvalidStepKeywordViolation(
+            return new MissingRequiredTagViolation(
                     SCENARIO_MESSAGE.formatted(scenario.getName()),
                     new FeatureLocation(gherkinDocument.getUri().orElse("unknown uri"),
                             scenario.getName(),
@@ -49,7 +49,7 @@ public class MissingRequiredTagChecker {
 
         @Override
         public String toString() {
-            return "MissingUserStoryTagViolation{" +
+            return "MissingRequiredTagViolation{" +
                     "featureFile='" + featureLocation.fileName() + '\'' +
                     "message='" + message + '\'' +
                     "tokenName='" + featureLocation.tokenName() + '\'' +

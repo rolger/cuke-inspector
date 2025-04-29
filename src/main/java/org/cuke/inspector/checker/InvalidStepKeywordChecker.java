@@ -63,9 +63,5 @@ public class InvalidStepKeywordChecker {
                             step.getLocation().getColumn()));
         }
 
-        @Override
-        public String format() {
-            return "";
-        }
     }
 }

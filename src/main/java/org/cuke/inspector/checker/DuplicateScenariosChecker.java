@@ -93,5 +93,13 @@ public class DuplicateScenariosChecker {
             });
             return sb.toString();
         }
+
+        @Override
+        public String toString() {
+            return "DuplicatedScenariosViolation{" +
+                    "message='" + message + '\'' +
+                    "featureLocations='" + locations +
+                    '}';
+        }
     }
 }
