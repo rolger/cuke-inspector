@@ -29,6 +29,21 @@
 
 Currently not available as jar file. Clone the repository locally
 
+## Example
+
+```
+class FindDuplicatesScenarioNameTest {
+    private static final Path FEATURE_FILE_PATH = Paths.get("src/test/resources/at.gv.bmf.ef.zkvbg.bdd.test.feature/");
+
+    @Test
+    void scenarioNameShouldBeUnique() throws IOException {
+        CukeInspector.withFeatureDirectory(FEATURE_FILE_PATH)
+                .should()
+                .findDuplicateScenarioNames()
+                .hasNoViolations();
+    }
+}
+```
 ---
 
 ## 🤝 Contributing
