@@ -12,17 +12,7 @@ final class ViolationFormatter {
     }
 
     public static String format(CukeViolation cukeViolation) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("\n");
-
-        sb.append(cukeViolation.featureLocation().fileName())
-                .append(":[")
-                .append(cukeViolation.featureLocation().line())
-                .append(",")
-                .append(cukeViolation.featureLocation().column().orElse(0L))
-                .append("] ")
-                .append(cukeViolation.message())
-                .append("\n");
-        return sb.toString();
+        FeatureLocation featureLocation = cukeViolation.featureLocation();
+        return "%n%s:[%d,%d] %s%n".formatted(featureLocation.fileName(), featureLocation.line(), featureLocation.column(), cukeViolation.message());
     }
 }

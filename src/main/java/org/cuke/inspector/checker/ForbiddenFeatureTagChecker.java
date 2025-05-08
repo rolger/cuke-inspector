@@ -42,7 +42,7 @@ public class ForbiddenFeatureTagChecker {
                             gherkinDocument.getUri().orElse("unknown uri"),
                             feature.getName(),
                             feature.getLocation().getLine(),
-                            feature.getLocation().getColumn()));
+                            feature.getLocation().getColumn().orElse(0L)));
         }
 
         @Override

@@ -55,8 +55,7 @@ public class UnusedStepDefinitionsChecker {
 
         @Override
         public String format() {
-            String indentation = "   ";
-            return "%n%s%n%s%s: @%s(\"%s\")%n".formatted(message(), indentation, step.getLocation(), step.getCucumberAnnotation(), step.getPattern());
+            return "%n%s%n   %s: @%s(\"%s\")%n".formatted(message(), step.getLocation(), step.getCucumberAnnotation(), step.getPattern());
         }
     }
 }

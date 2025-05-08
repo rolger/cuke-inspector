@@ -20,12 +20,13 @@ import java.io.InputStream;
 import java.net.URI;
 import java.time.Clock;
 import java.util.*;
+import java.util.Map.Entry;
 
 import static java.util.Collections.singletonList;
 
 public class CucumberSupplier {
 
-    private final Map<String, InputStream> featureSources;
+    private final Set<Entry<String, InputStream>> featureSources;
     private final List<URI> featureURIs;
     private final URI glueDirectoryUri;
     private List<Feature> features;
@@ -33,7 +34,7 @@ public class CucumberSupplier {
     private CukeCachingGlue glue;
 
     public CucumberSupplier(Map<String, InputStream> featureSources, List<URI> featureURIs, URI glueDirectoryUri) {
-        this.featureSources = featureSources;
+        this.featureSources = featureSources.entrySet();
         this.featureURIs = featureURIs;
         this.glueDirectoryUri = glueDirectoryUri;
 
@@ -76,7 +77,7 @@ public class CucumberSupplier {
                     .includePickles(true)
                     .build();
 
-            gherkinDocuments = featureSources.entrySet().stream()
+            gherkinDocuments = featureSources.stream()
                     .map(entry -> getGherkinDocuments(entry, parser))
                     .toList();
         }
@@ -84,7 +85,7 @@ public class CucumberSupplier {
     }
 
     @SneakyThrows
-    private static GherkinDocument getGherkinDocuments(Map.Entry<String, InputStream> entry, GherkinParser parser) {
+    private static GherkinDocument getGherkinDocuments(Entry<String, InputStream> entry, GherkinParser parser) {
         return parser.parse(entry.getKey(), entry.getValue())
                 .map(Envelope::getGherkinDocument)
                 .filter(Optional::isPresent)

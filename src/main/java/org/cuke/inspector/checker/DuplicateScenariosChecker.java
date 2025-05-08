@@ -52,7 +52,7 @@ public class DuplicateScenariosChecker {
                                     new FeatureLocation(combination.doc().getUri().orElse("unknown uri"),
                                             combination.scenario().getName(),
                                             combination.scenario().getLocation().getLine(),
-                                            combination.scenario().getLocation().getColumn()))
+                                            combination.scenario().getLocation().getColumn().orElse(0L)))
                             .toList());
         }
 
@@ -88,7 +88,7 @@ public class DuplicateScenariosChecker {
                         .append(":[")
                         .append(location.line())
                         .append(",")
-                        .append(location.column().orElse(0L))
+                        .append(location.column())
                         .append("] ")
                         .append("\n");
             });
