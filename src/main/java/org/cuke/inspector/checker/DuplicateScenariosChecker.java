@@ -52,7 +52,7 @@ public class DuplicateScenariosChecker {
                                     new FeatureLocation(combination.doc().getUri(),
                                             combination.scenario().getName(),
                                             combination.scenario().getLocation().getLine(),
-                                            combination.scenario().getLocation().getColumn()))
+                                            combination.scenario().getLocation().getColumn().orElse(0L)))
                             .toList());
         }
 
