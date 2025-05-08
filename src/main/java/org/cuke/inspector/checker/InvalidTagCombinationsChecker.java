@@ -72,7 +72,7 @@ public class InvalidTagCombinationsChecker {
                     new FeatureLocation(gherkinDocument.getUri(),
                             feature.getName(),
                             feature.getLocation().getLine(),
-                            feature.getLocation().getColumn().orElse(0L)));
+                            feature.getLocation().getColumn()));
         }
 
         private static CukeViolation build(GherkinDocument gherkinDocument, Scenario scenario, Set<String> invalidTagCombination) {
@@ -81,7 +81,7 @@ public class InvalidTagCombinationsChecker {
                     new FeatureLocation(gherkinDocument.getUri(),
                             scenario.getName(),
                             scenario.getLocation().getLine(),
-                            scenario.getLocation().getColumn().orElse(0L)));
+                            scenario.getLocation().getColumn()));
         }
 
         private static String formatMessage(String message, String name, Set<String> invalidTagCombination) {

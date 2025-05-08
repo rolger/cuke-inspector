@@ -45,7 +45,7 @@ public class MissingRequiredTagChecker {
                     new FeatureLocation(gherkinDocument.getUri(),
                             scenario.getName(),
                             scenario.getLocation().getLine(),
-                            scenario.getLocation().getColumn().orElse(0L)));
+                            scenario.getLocation().getColumn()));
         }
 
         @Override

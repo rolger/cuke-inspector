@@ -61,7 +61,7 @@ public class InvalidStepKeywordChecker {
                     new FeatureLocation(gherkinDocument.getUri(),
                             step.getKeyword() + step.getText(),
                             step.getLocation().getLine(),
-                            step.getLocation().getColumn().orElse(0L)));
+                            step.getLocation().getColumn()));
         }
 
     }

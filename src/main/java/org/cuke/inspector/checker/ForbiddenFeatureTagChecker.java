@@ -41,7 +41,7 @@ public class ForbiddenFeatureTagChecker {
                     new FeatureLocation(gherkinDocument.getUri(),
                             feature.getName(),
                             feature.getLocation().getLine(),
-                            feature.getLocation().getColumn().orElse(0L)));
+                            feature.getLocation().getColumn()));
         }
 
         @Override
