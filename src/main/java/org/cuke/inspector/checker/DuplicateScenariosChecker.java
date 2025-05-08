@@ -49,7 +49,7 @@ public class DuplicateScenariosChecker {
                     SCENARIO_MESSAGE.formatted(scenarios.getFirst().scenario().getName(), scenarios.size()),
                     scenarios.stream()
                             .map(combination ->
-                                    new FeatureLocation(combination.doc().getUri().orElse("unknown uri"),
+                                    new FeatureLocation(combination.doc().getUri(),
                                             combination.scenario().getName(),
                                             combination.scenario().getLocation().getLine(),
                                             combination.scenario().getLocation().getColumn()))
@@ -88,7 +88,7 @@ public class DuplicateScenariosChecker {
                         .append(":[")
                         .append(location.line())
                         .append(",")
-                        .append(location.column().orElse(0L))
+                        .append(location.column())
                         .append("] ")
                         .append("\n");
             });

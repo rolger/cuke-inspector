@@ -3,6 +3,7 @@ package org.cuke.inspector;
 import io.cucumber.core.backend.*;
 import io.cucumber.core.stepexpression.StepExpression;
 import io.cucumber.java.StepDefinitionAnnotation;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.annotation.Annotation;
@@ -80,16 +81,13 @@ public class CukeInspectorStepDefinition implements StepDefinition {
         return getCucumberAnnotation((JavaMethodReference) getSourceReference().get());
     }
 
+    @SneakyThrows
     private String getCucumberAnnotation(JavaMethodReference reference) {
-        try {
-            return Arrays.stream(Class.forName(reference.className()).getDeclaredMethods())
-                    .filter(m -> m.getName().equals(reference.methodName()))
-                    .map(this::getStepDefinitionAnnotation)
-                    .findFirst()
-                    .orElse("");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        return Arrays.stream(Class.forName(reference.className()).getDeclaredMethods())
+                .filter(m -> m.getName().equals(reference.methodName()))
+                .map(this::getStepDefinitionAnnotation)
+                .findFirst()
+                .orElse("");
     }
 
     private String getStepDefinitionAnnotation(Method method) {

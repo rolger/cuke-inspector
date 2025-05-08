@@ -42,7 +42,7 @@ public class MissingRequiredTagChecker {
         private static CukeViolation buildViolation(GherkinDocument gherkinDocument, Scenario scenario) {
             return new MissingRequiredTagViolation(
                     SCENARIO_MESSAGE.formatted(scenario.getName()),
-                    new FeatureLocation(gherkinDocument.getUri().orElse("unknown uri"),
+                    new FeatureLocation(gherkinDocument.getUri(),
                             scenario.getName(),
                             scenario.getLocation().getLine(),
                             scenario.getLocation().getColumn()));

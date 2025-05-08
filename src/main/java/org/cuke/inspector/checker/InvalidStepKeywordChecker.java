@@ -58,7 +58,7 @@ public class InvalidStepKeywordChecker {
         private static CukeViolation buildViolation(GherkinDocument gherkinDocument, Step step) {
             return new InvalidStepKeywordViolation(
                     STEP_MESSAGE.formatted(step.getText(), step.getKeyword()),
-                    new FeatureLocation(gherkinDocument.getUri().orElse("unknown uri"),
+                    new FeatureLocation(gherkinDocument.getUri(),
                             step.getKeyword() + step.getText(),
                             step.getLocation().getLine(),
                             step.getLocation().getColumn()));

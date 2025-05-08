@@ -5,7 +5,7 @@ import io.cucumber.messages.types.*;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class CucumberStreamingHelper {
+public final class CucumberStreamingHelper {
 
     private CucumberStreamingHelper() {
         // don't create helper with static methods
@@ -21,9 +21,9 @@ public class CucumberStreamingHelper {
         return Stream.concat(
                 ruleScenarioStream,
                 feature.getChildren().stream()
-                .map(FeatureChild::getScenario)
-                .filter(Optional::isPresent)
-                .map(Optional::get));
+                        .map(FeatureChild::getScenario)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get));
     }
 
     private static Stream<Rule> ruleStream(Feature feature) {

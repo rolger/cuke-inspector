@@ -38,8 +38,7 @@ public class ForbiddenFeatureTagChecker {
         private static CukeViolation build(GherkinDocument gherkinDocument, Feature feature, String forbiddenTagName) {
             return new ForbiddenFeatureTagViolation(
                     FEATURE_MESSAGE.formatted(feature.getName(), forbiddenTagName),
-                    new FeatureLocation(
-                            gherkinDocument.getUri().orElse("unknown uri"),
+                    new FeatureLocation(gherkinDocument.getUri(),
                             feature.getName(),
                             feature.getLocation().getLine(),
                             feature.getLocation().getColumn()));
