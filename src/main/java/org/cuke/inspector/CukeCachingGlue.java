@@ -10,9 +10,11 @@ import lombok.Getter;
 import java.util.*;
 
 public final class CukeCachingGlue implements Glue {
-    private final List<StepDefinition> stepDefinitions = new ArrayList<>();
+    protected final List<StepDefinition> stepDefinitions = new ArrayList<>();
     @Getter
     private final Map<String, List<CukeInspectorStepDefinition>> stepDefinitionsByPattern = new TreeMap<>();
+    @Getter
+    private final List<ParameterTypeDefinition> parameterTypes = new ArrayList<>();
     private final EventBus bus;
 
     CukeCachingGlue(EventBus bus) {
@@ -48,7 +50,7 @@ public final class CukeCachingGlue implements Glue {
     }
 
     public void addParameterType(ParameterTypeDefinition parameterType) {
-        // not needed
+        this.parameterTypes.add(parameterType);
     }
 
     public void addDataTableType(DataTableTypeDefinition dataTableType) {
@@ -76,6 +78,9 @@ public final class CukeCachingGlue implements Glue {
     }
 
     public void prepareGlue(StepTypeRegistry stepTypeRegistry) {
+        parameterTypes.stream()
+                .forEach(parameterType -> stepTypeRegistry.defineParameterType(parameterType.parameterType()));
+
         StepExpressionFactory stepExpressionFactory = new StepExpressionFactory(stepTypeRegistry, this.bus);
         this.stepDefinitions.forEach(stepDefinition -> {
             StepExpression expression = stepExpressionFactory.createExpression(stepDefinition);

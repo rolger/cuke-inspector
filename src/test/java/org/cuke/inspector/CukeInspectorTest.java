@@ -260,6 +260,18 @@ class CukeInspectorTest {
 
             assertThat(cukeInspector.getViolations()).hasSize(1);
         }
+
+        @Test
+        void shouldAcceptCustomTypesInExpressions() throws IOException {
+            List<CukeViolation> violations = CukeInspector
+                    .withFeatureDirectory(Paths.get("src/test/resources/customtype"))
+                    .withJavaPackage("org.cuke.inspector.steps.customtype")
+                    .should()
+                    .findUnusedStepDefinitions()
+                    .getViolations();
+
+            assertThat(violations).isEmpty();
+        }
     }
 
     @Nested
