@@ -41,7 +41,7 @@ class CukeCachingGlueTest {
     void shouldLoadStepDefinitions() {
         backend.loadGlue(glue, singletonList(URI.create("classpath:org.cuke.inspector.steps.customtype")));
 
-        assertThat(glue.stepDefinitions).hasSize(1);
+        assertThat(glue.getStepDefinitions()).hasSize(1);
     }
 
     @Test

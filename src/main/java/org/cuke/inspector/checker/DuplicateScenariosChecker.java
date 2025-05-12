@@ -33,7 +33,7 @@ public class DuplicateScenariosChecker {
         return doc.getFeature()
                 .map(feature -> scenarioStream(feature)
                         .map(scenario -> new ScenarioWithGherkinDocument(scenario, doc)))
-                .orElse(Stream.empty());
+                .orElseGet(Stream::empty);
     }
 
     public record ScenarioWithGherkinDocument(Scenario scenario, GherkinDocument doc) {
@@ -79,19 +79,10 @@ public class DuplicateScenariosChecker {
         @Override
         public String format() {
             StringBuilder sb = new StringBuilder();
-            sb.append("\n");
-            sb.append(message()).append("\n");
-            featureLocations().forEach(location -> {
-                String indentation = "   ";
-                sb.append(indentation)
-                        .append(location.fileName())
-                        .append(":[")
-                        .append(location.line())
-                        .append(",")
-                        .append(location.column())
-                        .append("] ")
-                        .append("\n");
-            });
+            sb.append("%n%s%n".formatted(message()));
+            featureLocations().forEach(location ->
+                    sb.append("   %s:[%d%d] %n".formatted(location.fileName(), location.line(), location.column()))
+            );
             return sb.toString();
         }
 

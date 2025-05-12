@@ -3,6 +3,7 @@ package org.cuke.inspector;
 import io.cucumber.core.backend.*;
 import io.cucumber.core.stepexpression.StepExpression;
 import io.cucumber.java.StepDefinitionAnnotation;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,7 +12,10 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 @Slf4j
+@Getter
 public class CukeInspectorStepDefinition implements StepDefinition {
+
+    private static final String INVALID_ANNOTATION = "Invalid Cucumber annotation";
 
     private final StepDefinition stepDefinition;
     private final StepExpression expression;
@@ -19,14 +23,6 @@ public class CukeInspectorStepDefinition implements StepDefinition {
     public CukeInspectorStepDefinition(StepDefinition stepDefinition, StepExpression expression) {
         this.stepDefinition = stepDefinition;
         this.expression = expression;
-    }
-
-    public StepExpression getExpression() {
-        return this.expression;
-    }
-
-    public StepDefinition getStepDefinition() {
-        return this.stepDefinition;
     }
 
     @Override
@@ -77,17 +73,20 @@ public class CukeInspectorStepDefinition implements StepDefinition {
                 .isEmpty();
     }
 
-    public String getCucumberAnnotation() {
-        return getCucumberAnnotation((JavaMethodReference) getSourceReference().get());
-    }
-
     @SneakyThrows
-    private String getCucumberAnnotation(JavaMethodReference reference) {
+    public String getCucumberAnnotation() {
+        Optional<SourceReference> sourceReference = getSourceReference();
+        if (sourceReference.isEmpty()) {
+            return INVALID_ANNOTATION;
+        }
+
+        JavaMethodReference reference = (JavaMethodReference) sourceReference.get();
+
         return Arrays.stream(Class.forName(reference.className()).getDeclaredMethods())
                 .filter(m -> m.getName().equals(reference.methodName()))
                 .map(this::getStepDefinitionAnnotation)
                 .findFirst()
-                .orElse("");
+                .orElse(INVALID_ANNOTATION);
     }
 
     private String getStepDefinitionAnnotation(Method method) {

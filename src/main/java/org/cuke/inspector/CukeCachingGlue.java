@@ -10,7 +10,8 @@ import lombok.Getter;
 import java.util.*;
 
 public final class CukeCachingGlue implements Glue {
-    protected final List<StepDefinition> stepDefinitions = new ArrayList<>();
+    @Getter
+    private final List<StepDefinition> stepDefinitions = new ArrayList<>();
     @Getter
     private final Map<String, List<CukeInspectorStepDefinition>> stepDefinitionsByPattern = new TreeMap<>();
     @Getter
@@ -78,8 +79,7 @@ public final class CukeCachingGlue implements Glue {
     }
 
     public void prepareGlue(StepTypeRegistry stepTypeRegistry) {
-        parameterTypes.stream()
-                .forEach(parameterType -> stepTypeRegistry.defineParameterType(parameterType.parameterType()));
+        parameterTypes.forEach(parameterType -> stepTypeRegistry.defineParameterType(parameterType.parameterType()));
 
         StepExpressionFactory stepExpressionFactory = new StepExpressionFactory(stepTypeRegistry, this.bus);
         this.stepDefinitions.forEach(stepDefinition -> {

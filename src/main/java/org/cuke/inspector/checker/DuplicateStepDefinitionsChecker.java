@@ -1,6 +1,9 @@
 package org.cuke.inspector.checker;
 
-import org.cuke.inspector.*;
+import org.cuke.inspector.CucumberSupplier;
+import org.cuke.inspector.CukeInspectorStepDefinition;
+import org.cuke.inspector.CukeViolation;
+import org.cuke.inspector.FeatureLocation;
 
 import java.util.List;
 
@@ -48,19 +51,10 @@ public class DuplicateStepDefinitionsChecker {
         @Override
         public String format() {
             StringBuilder sb = new StringBuilder();
-            sb.append("\n");
-            sb.append(message()).append("\n");
-            steps.forEach(stepDefinition -> {
-                String indentation = "   ";
-                sb.append(indentation)
-                        .append(stepDefinition.getLocation())
-                        .append(": @")
-                        .append(stepDefinition.getCucumberAnnotation())
-                        .append("(\"")
-                        .append(stepDefinition.getPattern())
-                        .append("\")")
-                        .append("\n");
-            });
+            sb.append("%n%s%n".formatted(message()));
+            steps.forEach(stepDefinition ->
+                    sb.append("   %s: @%s(\"%s\")%n %n".formatted(stepDefinition.getLocation(), stepDefinition.getCucumberAnnotation(), stepDefinition.getPattern()))
+            );
             return sb.toString();
         }
 
