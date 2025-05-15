@@ -80,10 +80,10 @@ public class CukeInspectorStepDefinition implements StepDefinition {
             return INVALID_ANNOTATION;
         }
 
-        JavaMethodReference reference = (JavaMethodReference) sourceReference.get();
+        JavaMethodReference javaMethodReference = (JavaMethodReference) sourceReference.get();
 
-        return Arrays.stream(Class.forName(reference.className()).getDeclaredMethods())
-                .filter(m -> m.getName().equals(reference.methodName()))
+        return Arrays.stream(Class.forName(javaMethodReference.className()).getDeclaredMethods())
+                .filter(m -> m.getName().equals(javaMethodReference.methodName()))
                 .map(this::getStepDefinitionAnnotation)
                 .findFirst()
                 .orElse(INVALID_ANNOTATION);
@@ -117,6 +117,3 @@ public class CukeInspectorStepDefinition implements StepDefinition {
         return annotationClass.getAnnotation(StepDefinitionAnnotation.class) != null;
     }
 }
-
-
-

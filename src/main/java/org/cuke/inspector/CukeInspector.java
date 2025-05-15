@@ -76,6 +76,11 @@ public final class CukeInspector {
         return this;
     }
 
+    public CukeInspector findMissingStepDefinitions() {
+        violations.addAll(new MissingStepDefinitions().inspect(cucumberSupplier));
+        return this;
+    }
+
     public List<CukeViolation> getViolations() {
         return Collections.unmodifiableList(violations);
     }
@@ -85,5 +90,4 @@ public final class CukeInspector {
             throw new AssertionFailedError(ViolationFormatter.format(violations));
         }
     }
-
 }

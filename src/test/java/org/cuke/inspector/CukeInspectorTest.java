@@ -275,6 +275,23 @@ class CukeInspectorTest {
     }
 
     @Nested
+    class MissingStepDefinitions {
+        @Test
+        void shouldFindNotYetImplementedSteps() throws IOException {
+            List<CukeViolation> violations = CukeInspector
+                    .withFeatureFile(Paths.get("src/test/resources/missingsteps/feature_without_step_impl.feature"))
+                    .withJavaPackage("org.cuke.inspector.steps.missing.steps")
+                    .should()
+                    .findMissingStepDefinitions()
+                    .getViolations();
+
+            assertThat(violations).hasSize(1);
+            assertThat(violations.getFirst().message()).contains("'Then there is no implementation'");
+        }
+
+    }
+
+    @Nested
     class MultipleAnalysis {
         @Test
         void shouldAggregateViolationsOfMultipleAnalysis() throws IOException {

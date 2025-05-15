@@ -53,7 +53,7 @@ public class DuplicateStepDefinitionsChecker {
             StringBuilder sb = new StringBuilder();
             sb.append("%n%s%n".formatted(message()));
             steps.forEach(stepDefinition ->
-                    sb.append("   %s: @%s(\"%s\")%n %n".formatted(stepDefinition.getLocation(), stepDefinition.getCucumberAnnotation(), stepDefinition.getPattern()))
+                    sb.append("   %s: @%s(\"%s\")%n".formatted(stepDefinition.getLocation(), stepDefinition.getCucumberAnnotation(), stepDefinition.getPattern()))
             );
             return sb.toString();
         }

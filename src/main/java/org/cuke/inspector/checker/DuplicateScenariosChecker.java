@@ -81,7 +81,7 @@ public class DuplicateScenariosChecker {
             StringBuilder sb = new StringBuilder();
             sb.append("%n%s%n".formatted(message()));
             featureLocations().forEach(location ->
-                    sb.append("   %s:[%d%d] %n".formatted(location.fileName(), location.line(), location.column()))
+                    sb.append("   %s:[%d,%d] %n".formatted(location.fileName(), location.line(), location.column()))
             );
             return sb.toString();
         }
