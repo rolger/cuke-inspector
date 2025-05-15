@@ -41,12 +41,12 @@ public final class CukeInspector {
         return new CukeInspectorBuilder().withJavaPackage(packageName);
     }
 
-    public CukeInspector checkInvalidTagCombinations(Set<String> invalidTagCombination) {
+    public CukeInspector findInvalidTagCombinations(Set<String> invalidTagCombination) {
         violations.addAll(new InvalidTagCombinationsChecker(invalidTagCombination).inspect(cucumberSupplier));
         return this;
     }
 
-    public CukeInspector checkInvalidInvalidKeywords(List<String> forbiddenStepKeywords) {
+    public CukeInspector findInvalidKeywords(List<String> forbiddenStepKeywords) {
         violations.addAll(new InvalidStepKeywordChecker(forbiddenStepKeywords).inspect(cucumberSupplier));
         return this;
     }

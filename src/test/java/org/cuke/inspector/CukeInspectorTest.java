@@ -47,7 +47,7 @@ class CukeInspectorTest {
             List<CukeViolation> violations = CukeInspector
                     .withFeatureFile(Paths.get(INVALID_TAG_COMBINATIONS_DIRECTORY + "feature_A.feature"))
                     .should()
-                    .checkInvalidTagCombinations(Set.of())
+                    .findInvalidTagCombinations(Set.of())
                     .getViolations();
 
             assertThat(violations).isEmpty();
@@ -58,7 +58,7 @@ class CukeInspectorTest {
             List<CukeViolation> violations = CukeInspector
                     .withFeatureDirectory(Paths.get(INVALID_TAG_COMBINATIONS_DIRECTORY))
                     .should()
-                    .checkInvalidTagCombinations(Set.of("@tag2", "@tag3"))
+                    .findInvalidTagCombinations(Set.of("@tag2", "@tag3"))
                     .getViolations();
 
             assertThat(violations).hasSize(3);
@@ -70,7 +70,7 @@ class CukeInspectorTest {
             List<CukeViolation> violations = CukeInspector
                     .withFeatureFile(Paths.get(INVALID_TAG_COMBINATIONS_DIRECTORY + "feature_with_feature_tags.feature"))
                     .should()
-                    .checkInvalidTagCombinations(Set.of("@tag2", "@tag3"))
+                    .findInvalidTagCombinations(Set.of("@tag2", "@tag3"))
                     .getViolations();
 
             assertThat(violations.getFirst().message()).startsWith("Feature");
@@ -82,7 +82,7 @@ class CukeInspectorTest {
             List<CukeViolation> violations = CukeInspector
                     .withFeatureFile(Paths.get(INVALID_TAG_COMBINATIONS_DIRECTORY + "dir.feature/feature_with_scenario_tags.feature"))
                     .should()
-                    .checkInvalidTagCombinations(Set.of("@tag2", "@tag3"))
+                    .findInvalidTagCombinations(Set.of("@tag2", "@tag3"))
                     .getViolations();
 
             assertThat(violations.getFirst().message()).startsWith("Scenario");
@@ -94,7 +94,7 @@ class CukeInspectorTest {
             List<CukeViolation> violations = CukeInspector
                     .withFeatureFile(Paths.get(INVALID_TAG_COMBINATIONS_DIRECTORY + "feature_with_mixed_tags.feature"))
                     .should()
-                    .checkInvalidTagCombinations(Set.of("@tag2", "@tag3"))
+                    .findInvalidTagCombinations(Set.of("@tag2", "@tag3"))
                     .getViolations();
 
             assertThat(violations.getFirst().message()).startsWith("Scenario");
@@ -109,7 +109,7 @@ class CukeInspectorTest {
             List<CukeViolation> violations = CukeInspector
                     .withFeatureFile(Paths.get("src/test/resources/invalidstepkeywords/feature_language_en.feature"))
                     .should()
-                    .checkInvalidInvalidKeywords(List.of())
+                    .findInvalidKeywords(List.of())
                     .getViolations();
 
             assertThat(violations).isEmpty();
@@ -120,7 +120,7 @@ class CukeInspectorTest {
             List<CukeViolation> violations = CukeInspector
                     .withFeatureFile(Paths.get("src/test/resources/invalidstepkeywords/feature_language_en.feature"))
                     .should()
-                    .checkInvalidInvalidKeywords(List.of("Happy"))
+                    .findInvalidKeywords(List.of("Happy"))
                     .getViolations();
 
             assertThat(violations).isEmpty();
@@ -131,7 +131,7 @@ class CukeInspectorTest {
             List<CukeViolation> violations = CukeInspector
                     .withFeatureFile(Paths.get("src/test/resources/invalidstepkeywords/feature_language_en.feature"))
                     .should()
-                    .checkInvalidInvalidKeywords(List.of("But"))
+                    .findInvalidKeywords(List.of("But"))
                     .getViolations();
 
             assertThat(violations).hasSize(3);
@@ -143,7 +143,7 @@ class CukeInspectorTest {
             List<CukeViolation> violations = CukeInspector
                     .withFeatureFile(Paths.get("src/test/resources/invalidstepkeywords/feature_language_de.feature"))
                     .should()
-                    .checkInvalidInvalidKeywords(List.of("Gegeben seien", "Gegeben sei", "Aber"))
+                    .findInvalidKeywords(List.of("Gegeben seien", "Gegeben sei", "Aber"))
                     .getViolations();
 
             assertThat(violations).hasSize(3);
@@ -288,8 +288,8 @@ class CukeInspectorTest {
                     .findFeaturesWithDisallowedTags(USERSTORY_TAG)
                     .findScenariosMissingRequiredTags(USERSTORY_TAG)
                     .findDuplicateStepDefinitions()
-                    .checkInvalidTagCombinations(Set.of("@tag2", "@tag3"))
-                    .checkInvalidInvalidKeywords(List.of("But"))
+                    .findInvalidTagCombinations(Set.of("@tag2", "@tag3"))
+                    .findInvalidKeywords(List.of("But"))
                     .getViolations();
 
             assertThat(violations).hasSize(15);
